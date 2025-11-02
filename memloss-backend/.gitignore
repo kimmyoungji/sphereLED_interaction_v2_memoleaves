@@ -1,0 +1,47 @@
+# Gradle
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iws
+*.iml
+*.ipr
+.idea_modules/
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+tmp/
+
+# VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Packaging
+*.jar
+*.war
+*.ear
+
+# Maven (in case)
+target/
+
+# Test results
+TEST-*.xml
+
+# Gradle Wrapper caches (keep wrapper scripts tracked)
+gradle-app.setting
+.gradletasknamecache
+
