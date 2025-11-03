@@ -1,80 +1,46 @@
+// ws/EventsWebSocketHandler.java
 package com.memloss.ws;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.memloss.domain.Events;
-import com.memloss.domain.Phase;
+import com.memloss.domain.InEvent;
+import com.memloss.domain.OutEvent;
 import com.memloss.service.PhaseService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.WebSocketMessage;
+import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.Mono;
 
 @Component
-public class EventsWebSocketHandler extends TextWebSocketHandler {
-    private static final Logger log = LoggerFactory.getLogger(EventsWebSocketHandler.class);
+public class EventsWebSocketHandler implements WebSocketHandler {
+  private final PhaseService phases;
+  private final ObjectMapper om = new ObjectMapper();
 
-    private final ObjectMapper om = new ObjectMapper();
-    private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final PhaseService phaseService;
+  public EventsWebSocketHandler(PhaseService phases) {
+    this.phases = phases;
+  }
 
-    public EventsWebSocketHandler(PhaseService phaseService) {
-        this.phaseService = phaseService;
-    }
+  @Override
+  public Mono<Void> handle(WebSocketSession session) {
+    // 서버 → 클라: 상태/파라미터 브로드캐스트 구독
+    var out = phases.stream()
+      .map(ev -> {
+        try { return om.writeValueAsString(ev); }
+        catch (Exception e) { return "{\"type\":\"error\"}"; }
+      })
+      .map(session::textMessage);
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.add(session);
-        log.info("[WS] connected: {}", session.getId());
-        // Send current phase to new client
-        send(session, new Events.PhaseEvent(phaseService.get()));
-    }
+    // 클라 → 서버: 이벤트 수신
+    var in = session.receive()
+      .map(WebSocketMessage::getPayloadAsText)
+      .flatMap(text -> {
+        try {
+          var ev = om.readValue(text, InEvent.class);
+          phases.onEvent(ev);
+        } catch (Exception ignore) { }
+        return Mono.empty();
+      });
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
-        log.info("[WS←] {}", payload);
-        JsonNode node = om.readTree(payload);
-        String type = node.path("type").asText("");
-        switch (type) {
-            case "rotation" -> {
-                // for demo, just log
-                log.debug("rotation: {}", payload);
-            }
-            case "breath" -> {
-                log.debug("breath: {}", payload);
-            }
-            case "phase" -> {
-                Phase p = Phase.valueOf(node.path("phase").asText("INIT"));
-                phaseService.set(p);
-                broadcast(new Events.PhaseEvent(p));
-            }
-            default -> log.warn("unknown message type: {}", type);
-        }
-    }
-
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        sessions.remove(session);
-        log.info("[WS] closed: {} ({})", session.getId(), status);
-    }
-
-    private void send(WebSocketSession s, Object ev) throws IOException {
-        s.sendMessage(new TextMessage(om.writeValueAsString(ev)));
-    }
-
-    private void broadcast(Object ev) throws IOException {
-        String json = om.writeValueAsString(ev);
-        for (WebSocketSession s : sessions) {
-            if (s.isOpen()) s.sendMessage(new TextMessage(json));
-        }
-    }
+    return session.send(out).and(in);
+  }
 }
