@@ -1,7 +1,6 @@
 // service/PhaseService.java
 package com.memloss.service;
 
-import com.memloss.domain.Events.*;
 import com.memloss.domain.InEvent;
 import com.memloss.domain.OutEvent;
 import com.memloss.domain.Phase;
@@ -29,22 +28,24 @@ public class PhaseService {
   public void onEvent(InEvent e) {
     try {
       switch (e.type()) {
-        case "consentYes" -> setPhase(Phase.GARDEN);
+        case "consentYes" -> setPhase(Phase.GARDEN_AND_DUST);
 
         case "rotation" -> emit(OutEvent.ledParam("rotation", e.payload())); // 그대로 TD로
 
         case "breath" -> {
           var map = (java.util.Map<?,?>) e.payload();
-          double intensity = ((Number) map.getOrDefault("intensity", 0)).doubleValue();
+          Object iVal = map.get("intensity");
+          double intensity = (iVal instanceof Number) ? ((Number) iVal).doubleValue() : 0.0;
           double dustOpacity = Math.max(0, 1.0 - intensity);
           emit(OutEvent.ledParam("dustOpacity", dustOpacity));
           // 간단 누적 임계 (실전은 EMA/윈도우)
-          if (intensity > 0.7 && phase.get() == Phase.DUST) setPhase(Phase.TIMELINE);
+          if (intensity > 0.7 && phase.get() == Phase.GARDEN_AND_DUST) setPhase(Phase.TIMELINE);
         }
 
         case "timelineSeek" -> {
           var map = (java.util.Map<?,?>) e.payload();
-          double t = ((Number) map.getOrDefault("t", 0)).doubleValue();
+          Object tObj = map.get("t");
+          double t = (tObj instanceof Number) ? ((Number) tObj).doubleValue() : 0.0;
           var label = (t < 0.33) ? "childhood" : (t < 0.66 ? "adult" : "elder");
           emit(OutEvent.timeline(t, label));
           if (t <= 0.2 && phase.get() == Phase.TIMELINE) setPhase(Phase.DRAGONFLY);
@@ -66,14 +67,14 @@ public class PhaseService {
     if (prev == p) return;
     log.info("PHASE {} -> {}", prev, p);
     emit(OutEvent.phase(p));
-    if (p == Phase.GARDEN) {
+    if (p == Phase.GARDEN_AND_DUST) {
       // 60s 후 DUST (단순 타이머, 실전은 cancel 핸들링)
       Flux.just(true).delayElements(Duration.ofSeconds(60))
-        .subscribe(_ -> { if (phase.get()==Phase.GARDEN) setPhase(Phase.DUST); });
+        .subscribe(ignored-> { if (phase.get()==Phase.GARDEN_AND_DUST) setPhase(Phase.TIMELINE); });
     }
     if (p == Phase.FINALE) {
       Flux.just(true).delayElements(Duration.ofSeconds(10))
-        .subscribe(_ -> setPhase(Phase.INIT));
+        .subscribe(ignored -> setPhase(Phase.INIT));
     }
   }
 

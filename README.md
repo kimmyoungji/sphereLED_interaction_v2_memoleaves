@@ -30,3 +30,10 @@ nvm list
 echo "24" > .nvmrc
 nvm use
 ```
+
+# how to build and run backend
+```
+cd memloss-backend
+./gradlew build
+./gradlew bootRun
+```
