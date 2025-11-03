@@ -28,7 +28,17 @@ public class PhaseService {
   public void onEvent(InEvent e) {
     try {
       switch (e.type()) {
+
+        // 클라이언트에서 phase를 보내어 그대로 서버의 상태가 결정되는 방식을 지양해야한다.
+        // 만약 그런 방식으로 돌아간다면 여러 클라이언트들이 자유롭게 서버의 상태를 결정하여, 체험이 순서대로 진행되지 않을 수 있다.
+        // 클라이언트에서 특정 이벤트를 수신하고 그에 따른 상태를 상태머신에서 결정하는 것이 더 안정적이다.
+        case "init" -> setPhase(Phase.INIT);
+
+        case "start" -> setPhase(Phase.HELP);
+
         case "consentYes" -> setPhase(Phase.GARDEN_AND_DUST);
+
+        case "consentNo" -> setPhase(Phase.INIT);
 
         case "rotation" -> emit(OutEvent.ledParam("rotation", e.payload())); // 그대로 TD로
 
@@ -67,7 +77,7 @@ public class PhaseService {
     if (prev == p) return;
     log.info("PHASE {} -> {}", prev, p);
     emit(OutEvent.phase(p));
-    if (p == Phase.GARDEN_AND_DUST) {
+    /* if (p == Phase.GARDEN_AND_DUST) {
       // 60s 후 DUST (단순 타이머, 실전은 cancel 핸들링)
       Flux.just(true).delayElements(Duration.ofSeconds(60))
         .subscribe(ignored-> { if (phase.get()==Phase.GARDEN_AND_DUST) setPhase(Phase.TIMELINE); });
@@ -75,10 +85,15 @@ public class PhaseService {
     if (p == Phase.FINALE) {
       Flux.just(true).delayElements(Duration.ofSeconds(10))
         .subscribe(ignored -> setPhase(Phase.INIT));
-    }
+    } */
   }
 
   private void emit(OutEvent event) {
-    bus.tryEmitNext(event);
+    var r = bus.tryEmitNext(event);
+    if (!r.isSuccess()) {
+      log.warn("emit failed: {}", r);
+    }else {
+      log.info("emit: {}", event);
+    }
   }
 }

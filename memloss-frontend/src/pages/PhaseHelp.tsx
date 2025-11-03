@@ -6,6 +6,7 @@ export default function PhaseHelp(){
     <div className="p-6">
       <h1>제임스를 도와주시겠습니까?</h1>
       <button onClick={()=>send({type:'consentYes'})}>YES</button>
+      <button onClick={()=>send({type:'consentNo'})}>NO</button>
     </div>
   );
 }

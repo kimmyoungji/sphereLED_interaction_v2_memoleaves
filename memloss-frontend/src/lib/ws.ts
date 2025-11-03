@@ -1,6 +1,6 @@
 // src/lib/ws.ts
 import { useApp } from '../store/app';
-import type { InEvent } from '../types/events';
+import type { InEvent, Phase } from '../types/events';
 const WS_DEBUG = import.meta.env.VITE_WS_DEBUG === 'true';
 
 export function initWebSocket() {
@@ -22,7 +22,10 @@ export function initWebSocket() {
       if (WS_DEBUG) console.log('[WS← raw]', ev.data)
 
       const msg = JSON.parse(ev.data) as InEvent;
-      if (msg.type === 'phase') useApp.getState().setPhase(msg.phase);
+
+      console.log("msg", msg)
+      
+      if (msg.type === 'phase') useApp.getState().setPhase(msg.payload.phase as Phase);
 
       if (WS_DEBUG) console.log('[WS←]', msg)
       // 원하는대로 더 반영(예: timeline.update, led.param)
