@@ -12,6 +12,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.List;
 
 @Component
 public class EventsWebSocketHandler implements WebSocketHandler {
@@ -29,11 +30,17 @@ public class EventsWebSocketHandler implements WebSocketHandler {
   @Override
   public Mono<Void> handle(WebSocketSession session) {
 
+    // sessionId를 이용하여 각 클라이언트의 상태를 관리
     String id = session.getId();
     sessions.add(id);
-    logger.info("[WS] connected: {} (active={})", id, sessions.size());
 
+    logger.info("[WS] connected: {} (active={})", id, sessions.size());
+    logger.info("[WS] sessionIds: {}", sessions);
+
+    // 초기 상태 전달
     var initial = Mono.fromSupplier(() -> OutEvent.phase(phases.getPhase()));
+    
+    // 상태 변경 이벤트 전달
     var out = initial.concatWith(phases.stream())
       .doOnSubscribe(s -> logger.info("[WS] out subscribed: {}", id))
       .doFinally(sig -> logger.info("[WS] out finally({}): {}", sig, id))
@@ -67,5 +74,9 @@ public class EventsWebSocketHandler implements WebSocketHandler {
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid inbound JSON: " + json, e);
     }
+  }
+
+  public List<String> sessionsSnapshot() {
+    return java.util.List.copyOf(sessions);
   }
 }
