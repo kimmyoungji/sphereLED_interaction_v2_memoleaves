@@ -6,13 +6,16 @@ export type OutEvent =
   | { type:'start' }
   | { type:'consentYes' }
   | { type:'consentNo' }
-  | { type:'rotation'; payload:{ yaw:number; pitch:number; roll:number } }
-  | { type:'breath'; payload:{ intensity:number } }          // 0..1
+  | { type:'sphereRotation'; payload:{ yaw:number; pitch:number; roll:number } }
+  | { type:'sphereOpacity'; payload:{ intensity:number; blowing?: boolean } }          // 0..1
   | { type:'timelineSeek'; payload:{ t:number } }            // 0..1
-  | { type:'catch'; payload:{ x:number; y:number } };
+  | { type:'catch'; payload:{ x:number; y:number } }
+  | { type:'prev' }
+  | { type:'next' };
 
 export type InEvent =
   | { type:'phase'; payload: { phase:Phase } }
-  | { type:'led.param'; payload: { key:'dustOpacity'|'rotation'; value:any } }
-  | { type:'timeline.update'; payload: { t:number; label?:string } }
-  | { type:'finale'; payload: { message:string } };
+  | { type:'sphereRotation'; payload: { yaw:number; pitch:number; roll:number } }
+  | { type:'sphereOpacity'; payload:{ opacity:number } };
+  //| { type:'timeline.update'; payload: { t:number; label?:string } }
+  // | { type:'finale'; payload: { message:string } }

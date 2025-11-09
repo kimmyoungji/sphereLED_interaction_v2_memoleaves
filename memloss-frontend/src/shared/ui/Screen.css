@@ -1,0 +1,22 @@
+/* src/shared/ui/screen.css */
+:root {
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --radius-md: 12px;
+  }
+  
+  html, body, #root { height: 100%; }
+  .screen {
+    min-height: 100dvh; /* or calc(var(--vh)*100) fallback */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--color-bg, #0b0b0b);
+    color: var(--color-fg, #f7f7f7);
+  }
+  .screen-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--space-4);
+  }

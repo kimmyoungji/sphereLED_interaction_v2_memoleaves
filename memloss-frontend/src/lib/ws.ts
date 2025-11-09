@@ -23,12 +23,17 @@ export function initWebSocket() {
 
       const msg = JSON.parse(ev.data) as InEvent;
 
-      console.log("msg", msg)
-      
-      if (msg.type === 'phase') useApp.getState().setPhase(msg.payload.phase as Phase);
+      useApp.getState().applyInEvent(msg);
 
-      if (WS_DEBUG) console.log('[WS←]', msg)
       // 원하는대로 더 반영(예: timeline.update, led.param)
+      if (msg.type === 'phase') {
+        useApp.getState().setPhase(msg.payload.phase);
+      } else if (msg.type === 'sphereRotation') {
+        useApp.getState().setSphereRotation(msg.payload.yaw, msg.payload.pitch, msg.payload.roll);
+      } else if (msg.type === 'sphereOpacity') {
+        useApp.getState().setSphereOpacity(msg.payload.opacity);
+      } 
+
     } catch(e) { console.warn('WS parse error', e); }
   };
   ws.onclose = () => {
@@ -36,3 +41,4 @@ export function initWebSocket() {
     setTimeout(initWebSocket, 1000);
   };
 }
+

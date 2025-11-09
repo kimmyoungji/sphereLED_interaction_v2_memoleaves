@@ -1,5 +1,5 @@
 // src/pages/PhaseTimeline.tsx
-import { useApp } from '../store/app';
+import { useApp } from '../../store/app';
 export default function PhaseTimeline(){
   const send = useApp(s=>s.send);
   return (

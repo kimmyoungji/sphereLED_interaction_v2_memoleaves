@@ -1,5 +1,5 @@
 // src/pages/PhaseDragonfly.tsx
-import { useApp } from '../store/app';
+import { useApp } from '../../store/app';
 
 export default function PhaseDragonfly(){
   const send = useApp(s=>s.send);
