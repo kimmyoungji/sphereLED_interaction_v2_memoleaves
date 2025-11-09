@@ -10,9 +10,9 @@ type BreathOpts = {
   offThreshold?: number; // 이 값 미만이면 blowing 종료, default 0.15
   // spring feel (optional)
   useSpring?: boolean; // true면 스프링 적용
-  stiffness?: number;  // k
-  damping?: number;    // c
-  mass?: number;       // m
+  stiffness?: number;  // k: 스프링 강성. 클수록 목표값으로 더 강하게/빠르게 끌어당김(응답 속도↑, 오버슈트 가능성↑)
+  damping?: number;    // c: 감쇠 계수. 클수록 진동/오버슈트 억제(안정성↑)하지만 반응이 둔해짐(응답 속도↓)
+  mass?: number;       // m: 질량(관성). 클수록 움직임이 무거워져 가속이 느림(반응 완만). k, c와 함께 전체 응답 특성 결정
   // tick (ws sending cadence)
   tickHz?: number;     // 예: 10Hz
   minDelta?: number;   // 전송 최소 변화량, default 0.03
@@ -25,8 +25,8 @@ export function useBreath(opts: BreathOpts = {}) {
         onThreshold = 0.22,
         offThreshold = 0.15,
         useSpring = true,
-        stiffness = 18,
-        damping = 6,
+        stiffness = 12,
+        damping = 8,
         mass = 1,
         tickHz = 10,
         minDelta = 0.03,

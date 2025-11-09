@@ -102,7 +102,7 @@ public class PhaseService {
         }
 
         /* timeline */
-        /* case "timelineSeek" -> {
+        case "timelineSeek" -> {
           
           // timeline 값 브로드캐스팅
           var map = (java.util.Map<?,?>) e.payload();
@@ -117,7 +117,7 @@ public class PhaseService {
           if (t <= 0.2 && phase.get() == Phase.TIMELINE) setPhase(Phase.DRAGONFLY);
         }
 
-        case "catch" -> {
+        /* case "catch" -> {
 
           var sid = e.sessionId();
 

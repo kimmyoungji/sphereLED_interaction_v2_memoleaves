@@ -13,7 +13,6 @@ public record OutEvent(String type, Object payload) {
     return new OutEvent("phase", new PhasePayload(p.name()));
   }
 
-  // Structured payloads (recommended)
   public static OutEvent sphereRotation(double yaw, double pitch, double roll) {
     logger.info("sphereRotation yaw={} pitch={} roll={}", yaw, pitch, roll);
     return new OutEvent("sphereRotation", new RotationPayload(yaw, pitch, roll));
@@ -24,26 +23,10 @@ public record OutEvent(String type, Object payload) {
     return new OutEvent("sphereOpacity", new OpacityPayload(opacity));
   }
 
-  // json sending example: OutEvent sphereRotation("rotation", 0.5);
-  // json receiving example: 
-  // { "type": "sphereRotation", "payload": { "key": "rotation", "value": 0.5 } }
-  public static OutEvent sphereRotation(String key, Object value) {
-    logger.info("sphereRotation {} {}", key, value);
-    return new OutEvent("sphereRotation", new Kv(key, value));
-  }
-
-  // json sending example: OutEvent sphereOpacity("opacity", 0.5);
-  // json receiving example: 
-  // { "type": "sphereOpacity", "payload": { "key": "opacity", "value": 0.5 } }
-  public static OutEvent sphereOpacity(String key, Object value) {
-    logger.info("sphereOpacity {} {}", key, value);
-    return new OutEvent("sphereOpacity", new Kv(key, value));
-  }
-
-  /* public static OutEvent timeline(double t, String label) {
-    logger.info("Timeline {} {}", t, label);
+  public static OutEvent timeline(double t, String label) {
+    logger.info("Timeline t={} label={}", t, label);
     return new OutEvent("timeline.update", new TimelinePayload(t, label));
-  } */
+  }
 
   /* public static OutEvent dragonflyCount(String sessionId, int count) {
     logger.info("DRAGONFLY COUNT {} -> {}", sessionId, count);
@@ -55,8 +38,8 @@ public record OutEvent(String type, Object payload) {
   public record PhasePayload(String phase) {}
   public record RotationPayload(double yaw, double pitch, double roll) {}
   public record OpacityPayload(double opacity) {}
+  public record TimelinePayload(double t, String label) {}
   public record Kv(String key, Object value) {}
   // public record TimelinePayload(double t, String label) {}
   // public record DragonflyCountPayload(String sessionId, int count) {}
 }
-
