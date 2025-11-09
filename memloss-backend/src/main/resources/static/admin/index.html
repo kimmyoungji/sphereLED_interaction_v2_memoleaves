@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.4}
+    pre{white-space:pre-wrap;word-break:break-word;background:#f6f8fa;padding:8px;border-radius:6px}
+    .row{margin:12px 0}
+    button,select{padding:6px 10px}
+  </style>
+</head>
+<body>
+  <h1>Server Admin</h1>
+  <div class="row"><button id="refresh">Refresh</button></div>
+  <div class="row"><b>Current Phase:</b> <span id="curPhase"></span></div>
+  <div class="row">
+    <label>Change Phase: </label>
+    <select id="phaseSel">
+      <option>INIT</option><option>HELP</option><option>GARDEN_AND_DUST</option>
+      <option>TIMELINE</option><option>DRAGONFLY</option><option>FINALE</option>
+    </select>
+    <button id="setPhase">Set</button>
+  </div>
+  <h3>Sessions</h3><pre id="sessions"></pre>
+  <h3>Recent Events</h3><pre id="events"></pre>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const $ = (id) => document.getElementById(id);
+      const curPhaseEl = $('curPhase');
+      const sessionsEl = $('sessions');
+      const eventsEl = $('events');
+      const refreshBtn = $('refresh');
+      const setPhaseBtn = $('setPhase');
+      const phaseSel = $('phaseSel');
+
+      async function fetchJSON(u){ const r = await fetch(u); return await r.json(); }
+
+      async function load(){
+        if (sessionsEl) {
+          const s = await fetchJSON('/api/admin/sessions');
+          sessionsEl.textContent = JSON.stringify(s,null,2);
+        }
+        if (eventsEl) {
+          const e = await fetchJSON('/api/admin/events');
+          eventsEl.textContent = JSON.stringify(e,null,2);
+        }
+        if (curPhaseEl) {
+          const p = await fetchJSON('/api/admin/phase');
+          curPhaseEl.textContent = p.phase;
+        }
+      }
+
+      if (refreshBtn) refreshBtn.addEventListener('click', load);
+      if (setPhaseBtn) setPhaseBtn.addEventListener('click', async () => {
+        const val = phaseSel && phaseSel.value;
+        if (!val) return;
+        const r = await fetch('/api/admin/phase?phase=' + encodeURIComponent(val), { method: 'POST' });
+        if (r.ok) { await load(); } else { alert('set phase failed'); }
+      });
+
+      load();
+    });
+  </script>
+</body>
+</html>
