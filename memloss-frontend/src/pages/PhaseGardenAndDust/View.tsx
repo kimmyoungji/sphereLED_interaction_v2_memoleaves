@@ -54,6 +54,7 @@ export default function PhaseGardenAndDust(){
   // 입김 센서 값 전송
   useEffect(() => {
     const off = onTick((val, blowing) => {
+      if (isDragging.current) return;
       send({ type: 'sphereOpacity', payload: { intensity: val, blowing } });
     });
     return off; // unsubscribe on unmount
