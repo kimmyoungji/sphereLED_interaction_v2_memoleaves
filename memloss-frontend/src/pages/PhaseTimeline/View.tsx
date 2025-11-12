@@ -5,7 +5,7 @@ export default function PhaseTimeline(){
   const send = useApp(s=>s.send);
   const [val, setVal] = useState(100); // 초기 값을 100으로 설정하여 t=1부터 시작
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ padding: 'var(--space-6)' }}>
       <h2>기억 타임라인</h2>
       <input
         type="range"

@@ -106,7 +106,7 @@ export default function PhaseGardenAndDust(){
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ padding: 'var(--space-6)' }}>
       <h2>정원 탐색 (~60s)</h2>
       <div
         ref={containerRef}
