@@ -28,10 +28,10 @@ public record OutEvent(String type, Object payload) {
     return new OutEvent("timeline.update", new TimelinePayload(t, label));
   }
 
-  /* public static OutEvent dragonflyCount(String sessionId, int count) {
-    logger.info("DRAGONFLY COUNT {} -> {}", sessionId, count);
-    return new OutEvent("dragonfly.count", new DragonflyCountPayload(sessionId, count));
-  } */
+  public static OutEvent catchDragonfly(int count) {
+    logger.info("DRAGONFLY COUNT {}", count);
+    return new OutEvent("catchDragonfly", new CatchDragonflyPayload(count));
+  }
 
   // these are not functions. these are class with compact syntax: record
   // record is not type, it is a class
@@ -39,7 +39,6 @@ public record OutEvent(String type, Object payload) {
   public record RotationPayload(double yaw, double pitch, double roll) {}
   public record OpacityPayload(double opacity) {}
   public record TimelinePayload(double t, String label) {}
+  public record CatchDragonflyPayload(int count) {}
   public record Kv(String key, Object value) {}
-  // public record TimelinePayload(double t, String label) {}
-  // public record DragonflyCountPayload(String sessionId, int count) {}
 }

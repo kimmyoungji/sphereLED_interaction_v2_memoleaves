@@ -117,21 +117,14 @@ public class PhaseService {
           if (t <= 0.2 && phase.get() == Phase.TIMELINE) setPhase(Phase.DRAGONFLY);
         }
 
-        /* case "catch" -> {
+        case "catchDragonfly" -> {
+          var map = (java.util.Map<?,?>) e.payload();
+          Object countObj = map.get("count");
+          int count = (countObj instanceof Number) ? ((Number) countObj).intValue() : 0;
+          emit(OutEvent.catchDragonfly(count));
 
-          var sid = e.sessionId();
-
-          if(sid != null && !sid.isBlank()){
-            int newCount = dragonflyCounts.compute(sid, (k, v) -> v == null ? 1 : v + 1);
-            emit(OutEvent.dragonflyCount(sid, newCount));
-          } else {
-            logger.warn("catch event without sessionId; cannot update dragonfly count");
-          }
-
-          // 실전은 진행도 누적/점수 관리
-          emit(OutEvent.timeline(0.99, "wrapup"));
-          setPhase(Phase.FINALE);
-        } */
+          if (count >= 16 && phase.get() == Phase.DRAGONFLY) setPhase(Phase.FINALE);
+        } 
       }
     } catch (Exception ex) {
       logger.warn("onEvent error: {}", ex.toString());
