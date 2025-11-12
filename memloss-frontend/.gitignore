@@ -46,3 +46,5 @@ Thumbs.db
 # Misc caches
 .turbo/
 
+# Media files
+src/assets/251109_mp4/*
