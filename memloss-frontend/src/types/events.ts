@@ -10,6 +10,7 @@ export type OutEvent =
   | { type:'sphereOpacity'; payload:{ intensity:number; blowing?: boolean } }          // 0..1
   | { type:'timelineSeek'; payload:{ t:number } }            // 0..1
   | { type:'catch'; payload:{ x:number; y:number } }
+  | { type:'catchDragonfly'; payload:{ count:number } }
   | { type:'prev' }
   | { type:'next' };
 
