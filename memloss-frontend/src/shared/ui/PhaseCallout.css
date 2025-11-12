@@ -1,0 +1,93 @@
+.phase-callout.phase-callout--visible { opacity: 1; }
+:root {
+  --pc-gap: 16px;
+  --pc-padding: 24px;
+  --pc-maxw: 960px;
+  --pc-text: #ffffff;
+  --pc-muted: rgba(255,255,255,0.75);
+  --pc-accent: rgba(255,255,255,0.9);
+}
+
+.phase-callout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none; /* let background interact unless on controls */
+  opacity: 0;
+  transition: opacity var(--pc-fade, 600ms) ease;
+}
+
+/* Horizontal alignment */
+.phase-callout--h-left { justify-content: flex-start; }
+.phase-callout--h-center { justify-content: center; }
+.phase-callout--h-right { justify-content: flex-end; }
+
+.phase-callout__wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: var(--pc-padding);
+}
+
+.phase-callout__box {
+  pointer-events: auto; /* enable interaction */
+  margin: 0 auto;
+  width: 100%;
+  max-width: var(--pc-maxw);
+  display: grid;
+  gap: var(--pc-gap);
+  color: var(--pc-text);
+  justify-items: center;
+  text-align: center;
+}
+
+.phase-callout__content {
+  display: grid;
+  gap: 8px;
+}
+
+.phase-callout__content * {
+  margin: 0;
+  color: var(--pc-text);
+}
+
+.phase-callout__content .muted { color: var(--pc-muted); }
+.phase-callout__content .accent { color: var(--pc-accent); font-weight: 700; }
+
+/* Transparent, softly pulsing button */
+.phase-callout__btn {
+  justify-self: center;
+  background: transparent;
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  transition: transform 120ms ease;
+  /* Text glow pulse */
+  text-shadow: 0 0 0 rgba(255,255,255,0);
+  opacity: 0.8;
+  animation: pc-text-glow 1800ms ease-in-out infinite;
+}
+
+.phase-callout__btn:hover { transform: translateY(-1px); }
+.phase-callout__btn:active { transform: translateY(0); }
+
+@keyframes pc-text-glow {
+  0%   { text-shadow: 0 0 0 rgba(255,255,255,0);   opacity: 0.7; }
+  50%  { text-shadow: 0 0 14px rgba(255,255,255,0.95); opacity: 1; }
+  100% { text-shadow: 0 0 0 rgba(255,255,255,0);   opacity: 0.7; }
+}
+
+.phase-callout__actions {
+  display: flex;
+  gap: var(--pc-gap);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}

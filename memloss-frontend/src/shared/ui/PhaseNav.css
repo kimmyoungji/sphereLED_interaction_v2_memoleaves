@@ -12,11 +12,27 @@
   box-shadow: var(--shadow-2);
   z-index: 50;
 }
-.phase-nav__btn {
+/* Increase specificity to win over .button from Button.css */
+.phase-nav .button.phase-nav__btn {
   appearance: none; border: 0; cursor: pointer;
   background: var(--color-bg, #0b0b0b); color: var(--color-fg, #f7f7f7);
   border-radius: var(--radius-full, 999px);
   padding: 8px 12px; min-width: 44px; min-height: 44px;
+}
+
+/* Primary action in nav */
+.phase-nav .button.phase-nav__btn--primary {
+  background: var(--color-accent, #4f8cff);
+  color: var(--color-accent-contrast, #fff);
+  border-color: transparent;
+}
+
+/* Phase label styling */
+.phase-nav__label {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 8px; min-height: 44px;
+  color: var(--color-fg, #f7f7f7);
+  opacity: 0.9;
 }
 .phase-nav__btn--primary { background: var(--color-accent, #4f8cff); color: var(--color-accent-contrast, #fff); }
 .phase-nav__label { color: var(--color-fg-muted, #c9c9c9); align-self: center; padding: 0 6px; }
