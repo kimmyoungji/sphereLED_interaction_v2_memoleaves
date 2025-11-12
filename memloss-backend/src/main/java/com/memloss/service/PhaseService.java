@@ -114,7 +114,7 @@ public class PhaseService {
           emit(OutEvent.timeline(t, timeLabel));
           
           // timeline slider 값이 20% 이하라면 DRAGONFLY로 변경
-          if (t <= 0.2 && phase.get() == Phase.TIMELINE) setPhase(Phase.DRAGONFLY);
+          if (t <= 0.05 && phase.get() == Phase.TIMELINE) setPhase(Phase.DRAGONFLY);
         }
 
         case "catchDragonfly" -> {
