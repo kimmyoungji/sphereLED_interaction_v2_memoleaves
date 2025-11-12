@@ -23,7 +23,7 @@ export default function PhaseHelp(){
       />
       <PhaseCallout 
         videoRef={videoRef} 
-        showAtSec={41} 
+        showAtSec={40} 
         align="center" 
         buttonLabel="Yes" 
         onAction={()=>send({type:'consentYes'})}
