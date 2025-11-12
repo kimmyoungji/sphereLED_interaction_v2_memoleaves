@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gardenSphereTexture from '../../assets/PhaseGardenAndDust/gardenSphereTexture.png';
 
 export type GardenDustScene = {
   setRotation: (r: { yaw: number; pitch: number; roll?: number }) => void;
@@ -16,7 +17,7 @@ export function createGardenDustScene(
   container: HTMLElement,
   opts: Options = {}
 ): GardenDustScene {
-  const background = opts.background ?? 0xf0f2f5;
+  const background = opts.background ?? 0x000000;
   const smoothing = opts.smoothing ?? 0.1;
 
   // Scene/camera/renderer
@@ -36,42 +37,94 @@ export function createGardenDustScene(
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
 
-  // Sphere with grid texture (ported from legacy)
-  const geometry = new THREE.SphereGeometry(1, 32, 32);
+  // Sphere with texture
+  const geometry = new THREE.SphereGeometry(1.3, 32, 32);
+  // Load sphere texture from assets
+  const texture = new THREE.TextureLoader().load(gardenSphereTexture);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  // Improve texture clarity
+  texture.generateMipmaps = true;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-  const canvas = document.createElement('canvas');
-  const size = 128;
-  canvas.width = size * 2;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = '#2c3e50';
-  ctx.fillRect(0, 0, size * 2, size);
-  ctx.strokeStyle = '#3498db';
-  ctx.lineWidth = 2;
-  for (let i = 0; i <= 10; i++) {
-    const x = (i / 10) * size * 2;
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, size);
-    ctx.stroke();
-  }
-  for (let i = 0; i <= 5; i++) {
-    const y = (i / 5) * size;
-    ctx.beginPath();
-    ctx.arc(size, size / 2, y / 2, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.MeshBasicMaterial({
     map: texture,
-    side: THREE.DoubleSide,
+    side: THREE.FrontSide,
     transparent: true,
     opacity: 1
   });
 
   const sphere = new THREE.Mesh(geometry, material);
   scene.add(sphere);
+
+  // Additive glow sprite around the sphere (outer halo)
+  const glowCanvas = document.createElement('canvas');
+  const glowSize = 256;
+  glowCanvas.width = glowSize;
+  glowCanvas.height = glowSize;
+  const gctx = glowCanvas.getContext('2d')!;
+  const grad = gctx.createRadialGradient(
+    glowSize / 2,
+    glowSize / 2,
+    glowSize * 0.18,
+    glowSize / 2,
+    glowSize / 2,
+    glowSize * 0.55
+  );
+  grad.addColorStop(0, 'rgba(255,255,255,0.8)');
+  grad.addColorStop(0.6, 'rgba(255,255,255,0.25)');
+  grad.addColorStop(1, 'rgba(255,255,255,0.0)');
+  gctx.fillStyle = grad;
+  gctx.fillRect(0, 0, glowSize, glowSize);
+
+  const glowTex = new THREE.CanvasTexture(glowCanvas);
+  glowTex.colorSpace = THREE.SRGBColorSpace;
+  const glowMat = new THREE.SpriteMaterial({
+    map: glowTex,
+    color: 0xffffff,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    opacity: 0.0
+  });
+  const glow = new THREE.Sprite(glowMat);
+  glow.scale.set(3.2, 3.2, 1); // larger halo
+  scene.add(glow);
+
+  // Secondary core glow (tighter, brighter center)
+  const coreCanvas = document.createElement('canvas');
+  const coreSize = 128;
+  coreCanvas.width = coreSize;
+  coreCanvas.height = coreSize;
+  const cctx = coreCanvas.getContext('2d')!;
+  const cgrad = cctx.createRadialGradient(
+    coreSize / 2,
+    coreSize / 2,
+    coreSize * 0.05,
+    coreSize / 2,
+    coreSize / 2,
+    coreSize * 0.45
+  );
+  cgrad.addColorStop(0, 'rgba(255,255,255,0.95)');
+  cgrad.addColorStop(0.5, 'rgba(255,255,255,0.35)');
+  cgrad.addColorStop(1, 'rgba(255,255,255,0)');
+  cctx.fillStyle = cgrad;
+  cctx.fillRect(0, 0, coreSize, coreSize);
+
+  const coreTex = new THREE.CanvasTexture(coreCanvas);
+  coreTex.colorSpace = THREE.SRGBColorSpace;
+  const coreGlowMat = new THREE.SpriteMaterial({
+    map: coreTex,
+    color: 0xffffff,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    opacity: 0.0
+  });
+  const coreGlow = new THREE.Sprite(coreGlowMat);
+  coreGlow.scale.set(1.8, 1.8, 1);
+  scene.add(coreGlow);
 
   // Lights
   scene.add(new THREE.AmbientLight(0xffffff, 0.5));
@@ -92,11 +145,18 @@ export function createGardenDustScene(
   }
 
   function setOpacity(intensity: number) {
-    // Example mapping: stronger breath -> clearer sphere
-    // opacity in [0.3 .. 1.0] where 1.0 is no dust
-    const alpha = 0.3 + 0.7 * (1 - Math.max(0, Math.min(1, intensity)));
+    // Example mapping: intensity in [0..1]
+    // sphere alpha in [0.6 .. 1.0] (higher intensity -> clearer but keep visibility high)
+    const clamped = Math.max(0, Math.min(1, intensity));
+    const alpha = 0.6 + 0.4 * (1 - clamped);
     material.opacity = alpha;
     material.needsUpdate = true;
+
+    // Brightness increases strongly with intensity
+    const outer = Math.min(1, Math.pow(clamped, 0.7) * 1.2);
+    const inner = Math.min(1, Math.pow(clamped, 1.3) * 1.0);
+    glowMat.opacity = outer;
+    coreGlowMat.opacity = inner;
   }
 
   function setCursor(cursor: string) {
@@ -155,6 +215,10 @@ export function createGardenDustScene(
     texture.dispose();
     geometry.dispose();
     material.dispose();
+    glowTex.dispose();
+    glowMat.dispose();
+    coreTex.dispose();
+    coreGlowMat.dispose();
     if (renderer.domElement.parentElement === container) {
       container.removeChild(renderer.domElement);
     }
