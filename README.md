@@ -15,11 +15,9 @@ npm run dev
 ```
 
 # how to build and run backend
+- required: install java 21 and gradle 8.10.2
 ```
 cd memloss-backend
 ./gradlew build
 ./gradlew bootRun
 ```
-
-
-

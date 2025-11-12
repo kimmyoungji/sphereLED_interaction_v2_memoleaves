@@ -4,7 +4,7 @@
 // - Starts a looping AudioBufferSourceNode on first user interaction (autoplay policies)
 // - Supports master volume via setVolume() and ducking (temporary attenuation) via setDuck()
 // - Ducking is used when a phase video plays so video audio is prominent while BGM stays in the background
-import bgmUrl from '../assets/sound/bgm/Udio_Infinite Reverb Tail ext v2.2.mp3';
+import bgmUrl from '../assets/bgm/Udio_Infinite Reverb Tail ext v2.2.mp3';
 
 // Web Audio primitives (lazily created)
 let ctx: AudioContext | null = null;                // singleton AudioContext
