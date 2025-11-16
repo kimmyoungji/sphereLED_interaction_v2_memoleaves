@@ -31,9 +31,9 @@ logs/
 Thumbs.db
 
 # Packaging
-*.jar
-*.war
-*.ear
+# *.jar
+# *.war
+# *.ear
 
 # Maven (in case)
 target/
