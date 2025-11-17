@@ -1,7 +1,7 @@
 // src/pages/PhaseHelp/View.tsx
 import { useApp } from '../../store/app';
 import { setDuck } from '../../audio/bgm';
-import intro2Video from '../../assets/PhaseHelp/INTRO (2)_43sec.mp4';
+import intro2Video from '../../assets/PhaseHelp/INTRO_40sec.mp4';
 import { useRef } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 
@@ -23,14 +23,14 @@ export default function PhaseHelp(){
       />
       <PhaseCallout 
         videoRef={videoRef} 
-        showAtSec={40} 
+        showAtSec={33} 
         align="center" 
-        buttonLabel="Yes" 
+        buttonLabel={<> <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>같이 나간다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>follow him </p> </>} 
         onAction={()=>send({type:'consentYes'})}
-        secondaryButtonLabel="No" 
+        secondaryButtonLabel={<> <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>머문다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>stay here </p> </>} 
         onSecondaryAction={()=>send({type:'consentNo'})}>
-        <h3>제임스를 도와주시겠습니까?</h3>
-        <p>would you like to help james?</p>
+        <h3>제임스가 정원으로 걸어나가고 있습니다. <br/> 같이 나가시겠습니까?</h3>
+        <p>james is walking to the garden. <br/> do you want to go with him?</p>
       </PhaseCallout>
     </div>
   );

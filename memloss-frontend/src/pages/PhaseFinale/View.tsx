@@ -1,6 +1,6 @@
 // src/pages/PhaseFinale.tsx
 import { useApp } from '../../store/app';
-import outroVideoWithText from '../../assets/PhaseFinale/OUTRO_Text(O).mp4';
+import outroVideoWithText from '../../assets/PhaseFinale/OUTRO_67sec.mp4';
 import { setDuck } from '../../audio/bgm';
 import { useRef } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
@@ -22,7 +22,7 @@ export default function PhaseFinale(){
       />
       <PhaseCallout 
         videoRef={videoRef} 
-        showAtSec={95} 
+        showAtSec={45} 
         // visible={true}
         align="center" 
         buttonLabel="tap to restart" 
