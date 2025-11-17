@@ -1,13 +1,16 @@
 // src/pages/PhaseGardenAndDust.tsx
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../store/app';
-import { useEffect } from 'react';
 import { createGardenDustScene } from '../../lib/three/scene';
 import { useBreath } from '../../hooks/useBreath';
+import { PhaseCallout } from '../../shared/ui/PhaseCallout';
+import intro2Video from '../../assets/PhaseGardenAndDust/INTRO(3)_Opening the door.mp4';
 
 export default function PhaseGardenAndDust(){
   const send = useApp(s => s.send);                                // 서버로 OutEvent를 보내는 함수
-  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoFaded, setVideoFaded] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);               // Three.js 캔버스를 붙일 DOM 컨테이너
   const sceneRef = useRef<ReturnType<typeof createGardenDustScene> | null>(null); // 생성된 Three.js 씬 핸들 보관
   const isDragging = useRef(false);                                // 드래그 중 여부
@@ -17,6 +20,16 @@ export default function PhaseGardenAndDust(){
 
   const rotation = useApp(s => s.sphereRotation);                  // InEvent로 들어온 구 회전값(스토어)
   const opacity = useApp(s => s.sphereOpacity);                    // InEvent로 들어온 구 불투명도(스토어)
+
+  // 콜아웃 표시/숨김 (자동 표시 후 버튼 클릭 시 숨김)
+  const [showCallout, setShowCallout] = useState(true);
+
+  // Throttle and delta constants for network sends
+  const MIN_INTERVAL_MS = 16; // ≈60Hz
+  const MIN_DELTA = 0.02;     // 임계 변화량
+
+  // High-resolution time helper
+  const nowMs = () => (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
 
   // 입김(호흡) 센서 값: value(세기), isBlowing(감지 여부), onTick(주기적 콜백)
   const { value: breath, isBlowing, onTick } = useBreath({
@@ -47,10 +60,6 @@ export default function PhaseGardenAndDust(){
     sceneRef.current.setOpacity(opacity);
   }, [opacity]);
 
-  /* useEffect(() => {
-    sceneRef.current?.setOpacity(breath);
-  }, [breath]); */
-
   // 입김 센서 값 전송
   useEffect(() => {
     const off = onTick((val, blowing) => {
@@ -80,13 +89,11 @@ export default function PhaseGardenAndDust(){
     sceneRef.current?.setRotation({ yaw: targetRotation.current.yaw, pitch: targetRotation.current.pitch, roll: 0 });
 
     // 네트워크 전송은 throttle(≈60Hz) + min-delta 적용
-    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    const minIntervalMs = 16; // ≈60Hz
-    const minDelta = 0.02;    // 임계 변화량
-    const shouldSendByTime = (now - lastSent.current.time) >= minIntervalMs;
+    const now = nowMs();
+    const shouldSendByTime = (now - lastSent.current.time) >= MIN_INTERVAL_MS;
     const shouldSendByDelta = (
-      Math.abs(targetRotation.current.yaw - lastSent.current.yaw) >= minDelta ||
-      Math.abs(targetRotation.current.pitch - lastSent.current.pitch) >= minDelta
+      Math.abs(targetRotation.current.yaw - lastSent.current.yaw) >= MIN_DELTA ||
+      Math.abs(targetRotation.current.pitch - lastSent.current.pitch) >= MIN_DELTA
     );
     if (shouldSendByTime || shouldSendByDelta) {
       send({ type: 'sphereRotation', payload: { yaw: targetRotation.current.yaw, pitch: targetRotation.current.pitch, roll: 0 } });
@@ -107,7 +114,45 @@ export default function PhaseGardenAndDust(){
 
   return (
     <div className="p-6" style={{ padding: 'var(--space-6)' }}>
-      <h2>정원 탐색 (~60s)</h2>
+
+      {showCallout && (
+        <PhaseCallout 
+          align="center"
+          videoRef={videoRef} 
+          showAtSec={5}
+          buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>정원을 둘러본다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>explore the garden </p></>}
+          onAction={()=>{ setShowCallout(false); setVideoFaded(true); }}
+          secondaryButtonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>처음으로 돌아간다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>go back to the start </p></>}
+          onSecondaryAction={()=>{ send({type:'init'}); setShowCallout(false);}}>
+          <h3>정원으로 나오니, <br/> 모든 것이 희뿌옇습니다.</h3>
+          <p>now we are in the garden <br/> and everything is blurry.</p>
+        </PhaseCallout>
+      )}
+
+      <video
+        src={intro2Video}
+        ref={videoRef}
+        autoPlay
+        playsInline
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
+          // blur + fade reveal underlying scene
+          opacity: videoFaded ? 0 : 1,
+          filter: videoFaded ? 'blur(12px)' : 'blur(0px)',
+          transition: 'opacity 900ms ease, filter 1200ms ease',
+          pointerEvents: videoFaded ? 'none' : 'auto',
+          willChange: 'opacity, filter',
+        }}
+      />
+
+      
+
+      {/* <p style={{ opacity: 0.8, textAlign: 'center' }}>구를 돌려 정원을 둘러보세요.<br/>rotate the sphere to explore the garden.</p> */}
       <div
         ref={containerRef}
         onPointerDown={onDown}
@@ -120,13 +165,16 @@ export default function PhaseGardenAndDust(){
         style={{ height: '60dvh', touchAction: 'none' }}
       />
 
+
+
       <div className="p-6">
-        <h2>입김으로 먼지를 걷어내세요</h2>
+        {/* <p style={{ opacity: 0.8, textAlign: 'center' }}>입김으로 정원의 먼지를 걷어내세요. <br/>blow to clean the dust.</p> */}
         <div className="h-4 bg-gray-200 rounded">
           <div className="h-4 bg-blue-500 rounded" style={{ width:`${breath*100}%` }} />
         </div>
         <p>입김 세기: {breath.toFixed(2)}</p>
       </div>
+
     </div>
   );
 }
