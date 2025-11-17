@@ -21,12 +21,12 @@ type BreathOpts = {
 export function useBreath(opts: BreathOpts = {}) {
     const {
         attack = 0.35,
-        release = 0.08,
+        release = 0.2,
         onThreshold = 0.22,
         offThreshold = 0.15,
         useSpring = true,
-        stiffness = 12,
-        damping = 8,
+        stiffness = 10,
+        damping = 5,
         mass = 1,
         tickHz = 10,
         minDelta = 0.03,

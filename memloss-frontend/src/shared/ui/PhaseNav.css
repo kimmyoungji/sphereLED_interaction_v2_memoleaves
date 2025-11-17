@@ -11,6 +11,7 @@
   padding: 6px;
   box-shadow: var(--shadow-2);
   z-index: 50;
+  margin-bottom: 12px;
 }
 /* Increase specificity to win over .button from Button.css */
 .phase-nav .button.phase-nav__btn {

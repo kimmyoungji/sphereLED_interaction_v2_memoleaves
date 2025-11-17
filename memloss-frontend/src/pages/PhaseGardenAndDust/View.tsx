@@ -5,6 +5,7 @@ import { createGardenDustScene } from '../../lib/three/scene';
 import { useBreath } from '../../hooks/useBreath';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import intro2Video from '../../assets/PhaseGardenAndDust/INTRO(3)_Opening the door.mp4';
+import './View.css';
 
 export default function PhaseGardenAndDust(){
   const send = useApp(s => s.send);                                // 서버로 OutEvent를 보내는 함수
@@ -61,7 +62,9 @@ export default function PhaseGardenAndDust(){
   }, [opacity]);
 
   // 입김 센서 값 전송
+  const inputEnabled = videoFaded && !showCallout;
   useEffect(() => {
+    if (!inputEnabled) return;
     const off = onTick((val, blowing) => {
       if (isDragging.current) return;
       send({ type: 'sphereOpacity', payload: { intensity: val, blowing } });
@@ -113,13 +116,13 @@ export default function PhaseGardenAndDust(){
   }
 
   return (
-    <div className="p-6" style={{ padding: 'var(--space-6)' }}>
+    <div className="gd-root">
 
       {showCallout && (
         <PhaseCallout 
           align="center"
           videoRef={videoRef} 
-          showAtSec={5}
+          showAtSec={2}
           buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>정원을 둘러본다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>explore the garden </p></>}
           onAction={()=>{ setShowCallout(false); setVideoFaded(true); }}
           secondaryButtonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>처음으로 돌아간다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>go back to the start </p></>}
@@ -134,25 +137,21 @@ export default function PhaseGardenAndDust(){
         ref={videoRef}
         autoPlay
         playsInline
+        className="gd-introVideo"
         style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          zIndex: 0,
-          // blur + fade reveal underlying scene
           opacity: videoFaded ? 0 : 1,
           filter: videoFaded ? 'blur(12px)' : 'blur(0px)',
-          transition: 'opacity 900ms ease, filter 1200ms ease',
           pointerEvents: videoFaded ? 'none' : 'auto',
-          willChange: 'opacity, filter',
         }}
       />
 
       
 
-      {/* <p style={{ opacity: 0.8, textAlign: 'center' }}>구를 돌려 정원을 둘러보세요.<br/>rotate the sphere to explore the garden.</p> */}
+      {videoFaded && (
+        <p style={{ opacity: 0.8, textAlign: 'center', margin: '0.5rem', }}>
+          구를 돌려 정원을 둘러보세요.<br/>rotate the sphere to explore the garden.
+        </p>
+      )}
       <div
         ref={containerRef}
         onPointerDown={onDown}
@@ -160,52 +159,23 @@ export default function PhaseGardenAndDust(){
         onPointerUp={onUp}
         onPointerLeave={onUp}
         onPointerCancel={onUp}
-        className="h-72 border rounded grid place-items-center select-none"
+        className="gd-scene h-64 border rounded grid place-items-center select-none"
         onContextMenu={(e)=> e.preventDefault()}
-        style={{ height: '60dvh', touchAction: 'none' }}
       />
 
-
-
-      
-
-      <div style={{ 
-        position: 'relative',
-        width: `${Math.max(0, Math.min(1, breath)) * 100 + 10}%`,
-        maxWidth: '960px',
-        height: '1.8rem',
-        margin: '0 auto'
-      }}>
-        {/* blurred glow background layer */}
-        <div aria-hidden style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'white',
-          borderRadius: '2rem',
-          opacity: 0.3,
-          filter: 'blur(5px)',
-          transition: 'opacity 120ms ease, filter 120ms ease',
-          willChange: 'opacity, filter'
-        }} />
-        {/* crisp text overlay (not blurred) */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none'
-        }}>
-          <span style={{
-            color: 'white',
-            opacity: 0.4,
-            filter: 'none',
-            transition: 'none'
-          }}>
-            {breath.toFixed(2)}
-          </span>
+      {videoFaded && (
+        <div className="gd-meter" style={{ width: `${Math.max(0, Math.min(1, breath)) * 100 + 10}%` }}>
+          <div aria-hidden className="gd-meter__bg" />
+          <div className="gd-meter__label">
+            <span>{breath.toFixed(2)}</span>
+          </div>
         </div>
-      </div>
+      )}
+      {videoFaded && (
+        <p style={{ opacity: 0.8, textAlign: 'center', margin: '0.5rem' }}>
+          입김을 불어 먼지를 날려보세요.<br/>blow into the sphere to send dust.
+        </p>
+      )}
 
     </div>
   );
