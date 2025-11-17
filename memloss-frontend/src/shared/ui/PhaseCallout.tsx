@@ -1,5 +1,5 @@
 // src/shared/ui/PhaseCallout.tsx
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import './PhaseCallout.css';
 
@@ -16,9 +16,9 @@ type PhaseCalloutProps = {
   /** Fade duration in ms (default 600). */
   fadeMs?: number;
   children: ReactNode;
-  buttonLabel: string;
-  onAction: () => void;
-  secondaryButtonLabel?: string;
+  buttonLabel?: ReactNode;
+  onAction?: () => void;
+  secondaryButtonLabel?: ReactNode;
   onSecondaryAction?: () => void;
 };
 
@@ -27,17 +27,16 @@ export function PhaseCallout({ align = 'center', visible, showAtSec, videoRef, f
 
   useEffect(() => {
     if (!videoRef?.current || showAtSec == null || visible !== undefined) return; // controlled or no video
-    const v = videoRef.current;
+    const video = videoRef.current;
     const onTime = () => {
-      if (v.currentTime >= showAtSec) setAutoVisible(true);
+      if (video.currentTime >= showAtSec) setAutoVisible(true);
     };
-    v.addEventListener('timeupdate', onTime);
-    // also check immediately (in case currentTime already past)
+    video.addEventListener('timeupdate', onTime);
     onTime();
-    return () => v.removeEventListener('timeupdate', onTime);
+    return () => video.removeEventListener('timeupdate', onTime);
   }, [videoRef, showAtSec, visible]);
 
-  const isVisible = useMemo(() => (visible !== undefined ? visible : autoVisible), [visible, autoVisible]);
+  const isVisible = visible !== undefined ? visible : autoVisible;
   const rootClass = `phase-callout phase-callout--${align} ${isVisible ? 'phase-callout--visible' : ''}`;
   const style = { ['--pc-fade' as any]: `${fadeMs}ms` };
   return (
@@ -46,7 +45,17 @@ export function PhaseCallout({ align = 'center', visible, showAtSec, videoRef, f
         <div className="phase-callout__box">
           <div className="phase-callout__content">{children}</div>
           <div className="phase-callout__actions">
-            <button className="phase-callout__btn" onClick={onAction}>{buttonLabel}</button>
+            {buttonLabel ? (
+              <button
+                className="phase-callout__btn"
+                onClick={onAction}
+                disabled={!onAction}
+                aria-disabled={!onAction}
+                style={!onAction ? { opacity: 0.5, animation: 'none', cursor: 'default' } : undefined}
+              >
+                {buttonLabel}
+              </button>
+            ) : null}
             {secondaryButtonLabel && onSecondaryAction ? (
               <button className="phase-callout__btn" onClick={onSecondaryAction}>{secondaryButtonLabel}</button>
             ) : null}

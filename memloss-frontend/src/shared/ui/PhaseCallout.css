@@ -15,6 +15,16 @@
   pointer-events: none; /* let background interact unless on controls */
   opacity: 0;
   transition: opacity var(--pc-fade, 600ms) ease;
+  z-index: 10; /* ensure overlay sits above background video */
+}
+
+.phase-callout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Horizontal alignment */
@@ -39,6 +49,12 @@
   color: var(--pc-text);
   justify-items: center;
   text-align: center;
+  /* background: rgba(0, 0, 0, 0.28);
+  border-radius: 16px;
+  padding: 16px 20px;
+  backdrop-filter: blur(6px) saturate(110%);
+  -webkit-backdrop-filter: blur(6px) saturate(110%);
+  box-shadow: 0 6px 30px rgba(0,0,0,0.25); */
 }
 
 .phase-callout__content {
@@ -49,6 +65,7 @@
 .phase-callout__content * {
   margin: 0;
   color: var(--pc-text);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 .phase-callout__content .muted { color: var(--pc-muted); }
@@ -73,6 +90,9 @@
   text-shadow: 0 0 0 rgba(255,255,255,0);
   opacity: 0.8;
   animation: pc-text-glow 1800ms ease-in-out infinite;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.18) inset, 0 6px 20px rgba(0,0,0,0.25);
 }
 
 .phase-callout__btn:hover { transform: translateY(-1px); }
