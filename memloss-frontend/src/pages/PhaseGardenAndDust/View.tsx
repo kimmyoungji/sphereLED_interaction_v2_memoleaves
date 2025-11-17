@@ -167,12 +167,44 @@ export default function PhaseGardenAndDust(){
 
 
 
-      <div className="p-6">
-        {/* <p style={{ opacity: 0.8, textAlign: 'center' }}>입김으로 정원의 먼지를 걷어내세요. <br/>blow to clean the dust.</p> */}
-        <div className="h-4 bg-gray-200 rounded">
-          <div className="h-4 bg-blue-500 rounded" style={{ width:`${breath*100}%` }} />
+      
+
+      <div style={{ 
+        position: 'relative',
+        width: `${Math.max(0, Math.min(1, breath)) * 100 + 10}%`,
+        maxWidth: '960px',
+        height: '1.8rem',
+        margin: '0 auto'
+      }}>
+        {/* blurred glow background layer */}
+        <div aria-hidden style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'white',
+          borderRadius: '2rem',
+          opacity: 0.3,
+          filter: 'blur(5px)',
+          transition: 'opacity 120ms ease, filter 120ms ease',
+          willChange: 'opacity, filter'
+        }} />
+        {/* crisp text overlay (not blurred) */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none'
+        }}>
+          <span style={{
+            color: 'white',
+            opacity: 0.4,
+            filter: 'none',
+            transition: 'none'
+          }}>
+            {breath.toFixed(2)}
+          </span>
         </div>
-        <p>입김 세기: {breath.toFixed(2)}</p>
       </div>
 
     </div>
