@@ -121,7 +121,7 @@ export default function PhaseGardenAndDust(){
       {showCallout && (
         <PhaseCallout 
           align="center"
-          videoRef={videoRef} 
+          videoRef={videoRef}
           showAtSec={2}
           buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>정원을 둘러본다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>explore the garden </p></>}
           onAction={()=>{ setShowCallout(false); setVideoFaded(true); }}
@@ -159,7 +159,7 @@ export default function PhaseGardenAndDust(){
         onPointerUp={onUp}
         onPointerLeave={onUp}
         onPointerCancel={onUp}
-        className="gd-scene h-64 border rounded grid place-items-center select-none"
+        className="gd-scene"
         onContextMenu={(e)=> e.preventDefault()}
       />
 
@@ -173,7 +173,7 @@ export default function PhaseGardenAndDust(){
       )}
       {videoFaded && (
         <p style={{ opacity: 0.8, textAlign: 'center', margin: '0.5rem' }}>
-          입김을 불어 먼지를 날려보세요.<br/>blow into the sphere to send dust.
+          최대한 길게 입김을 불어 먼지를 날려보세요. <br/> 제임스의 기억이 보일거에요.<br/>blow into the sphere to send dust. <br/> you will see james' memories.
         </p>
       )}
 

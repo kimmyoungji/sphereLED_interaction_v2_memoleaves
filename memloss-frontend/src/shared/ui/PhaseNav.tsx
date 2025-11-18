@@ -26,7 +26,7 @@ export function PhaseNav() {
     <div className="phase-nav" role="navigation" aria-label="Phase navigation">
       <Button className="phase-nav__btn" disabled={busy} onClick={() => go('prev')}>Prev</Button>
       <span className="phase-nav__label">{phase}</span>
-      <Button className="phase-nav__btn phase-nav__btn--primary" disabled={busy} onClick={() => go('next')}>Next</Button>
+      <Button className="phase-nav__btn" disabled={busy} onClick={() => go('next')}>Next</Button>
     </div>
   );
 }

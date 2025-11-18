@@ -98,7 +98,7 @@ public class PhaseService {
           emit(OutEvent.sphereOpacity(intensity)); // structured payload to FE
           
           // 간단 누적 임계 (실전은 EMA/윈도우)opacity
-          if (intensity > 0.8 && phase.get() == Phase.GARDEN_AND_DUST) setPhase(Phase.TIMELINE);
+          if (intensity > 0.7 && phase.get() == Phase.GARDEN_AND_DUST) setPhase(Phase.TIMELINE);
         }
 
         /* timeline */

@@ -17,8 +17,12 @@
 
 /* Three.js scene container */
 .gd-scene {
-  height: 58dvh;
+  height: 50dvh;
   touch-action: none;
+  padding: 0;          /* remove any internal padding */
+  margin: 0;           /* ensure no extra margins interfere */
+  display: grid;       /* control internal alignment */
+  place-items: start center; /* top-align content to reduce bottom space */
 }
 
 /* Breath meter */

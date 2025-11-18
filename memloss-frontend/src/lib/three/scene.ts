@@ -30,7 +30,7 @@ export function createGardenDustScene(
     0.1,
     1000
   );
-  camera.position.z = 3;
+  camera.position.z = 2.5;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
