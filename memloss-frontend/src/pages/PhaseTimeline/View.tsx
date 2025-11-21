@@ -2,6 +2,8 @@
 import { useApp } from '../../store/app';
 import { useMemo, useRef, useState } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
+import { t } from '../../shared/i18n/strings';
+
 import './View.css';
 export default function PhaseTimeline(){
   const send = useApp(s=>s.send);
@@ -14,28 +16,16 @@ export default function PhaseTimeline(){
   const [introPage, setIntroPage] = useState(0);
   const introPages = useMemo(() => [
     {
-      ko: (
-        <h3>정원의 먼지가 날아가<br/>제임스의 기억들이 선명해졌습니다.</h3>
-      ),
-      en: (
-        <p>As the dust cleared, <br/> James’s memories became clear again.</p>
-      )
+      ko: (<h3 style={{ whiteSpace: 'pre-line' }}>{t('timeline','page1_title_ko')}</h3>),
+      en: (<p style={{ whiteSpace: 'pre-line' }}>{t('timeline','page1_title_en')}</p>),
     },
     {
-      ko: (
-        <h3>슬라이더를 움직여<br/>제임스의 기억을 들여다보세요.</h3>
-      ),
-      en: (
-        <p>Move the slider <br/> to explore James’s memories.</p>
-      )
+      ko: (<h3 style={{ whiteSpace: 'pre-line' }}>{t('timeline','page2_title_ko')}</h3>),
+      en: (<p style={{ whiteSpace: 'pre-line' }}>{t('timeline','page2_title_en')}</p>),
     },
     {
-      ko: (
-        <h3>슬라이더를 왼쪽 끝까지 움직이면<br/>가장 소중한 기억으로 더 깊이 들어갑니다.</h3>
-      ),
-      en: (
-        <p>Push the slider all the way left <br/> to dive into his dearest memory.</p>
-      )
+      ko: (<h3 style={{ whiteSpace: 'pre-line' }}>{t('timeline','page3_title_ko')}</h3>),
+      en: (<p style={{ whiteSpace: 'pre-line' }}>{t('timeline','page3_title_en')}</p>),
     }
   ], []);
   
@@ -92,9 +82,9 @@ export default function PhaseTimeline(){
     { ko: '도와줄래?', en: 'Will you help me?' },
   ];
 
-  const t = val / 100;
+  const progress = val / 100;
   const n = images.length;
-  const x = n > 0 ? (n - 1) * t : 0;
+  const x = n > 0 ? (n - 1) * progress : 0;
   const i0 = Math.max(0, Math.min(n - 1, Math.floor(x)));
   const i1 = Math.max(0, Math.min(n - 1, i0 + 1));
   const alpha = Math.min(1, Math.max(0, x - Math.floor(x)));
@@ -124,11 +114,11 @@ export default function PhaseTimeline(){
     let idx = 0;
     let dist = Infinity;
     for (let i = 0; i < markers.length; i++) {
-      const d = Math.abs(t - markers[i]);
+      const d = Math.abs(progress - markers[i]);
       if (d < dist) { idx = i; dist = d; }
     }
     return { nearestIdx: idx, nearestDist: dist };
-  }, [t, markers]);
+  }, [progress, markers]);
 
   // Only show caption if within window of a marker (e.g., ±3% of slider)
   const CAPTION_WINDOW = 0.03;
@@ -147,8 +137,8 @@ export default function PhaseTimeline(){
         backdropOpacity={0.9}
         buttonLabel={
           introPage === 0
-            ? (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>기억을 들여다본다 </p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>look into memories</p></>)
-            : (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>계속진행하기 </p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>Tap to continue</p></>)
+            ? (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('timeline','start_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('timeline','start_button_sub')}</p></>)
+            : (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('timeline','continue_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('timeline','continue_button_sub')}</p></>)
         }
         onAction={() => {
           if (introPage === 0) {

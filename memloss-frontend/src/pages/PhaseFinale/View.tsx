@@ -4,6 +4,7 @@ import outroVideoWithText from '../../assets/PhaseFinale/OUTRO_67sec.mp4';
 import { setDuck } from '../../audio/bgm';
 import { useRef, useState } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
+import { t } from '../../shared/i18n/strings';
 
 export default function PhaseFinale(){
     const send = useApp(s=>s.send);
@@ -24,9 +25,9 @@ export default function PhaseFinale(){
       <PhaseCallout 
         videoRef={videoRef} 
         showAtSec={45} 
-        buttonLabel="tap to restart" 
+        buttonLabel={t('finale','restart_cta')} 
         onAction={()=>send({type:'init'})}>
-        <h2>Thank you.</h2>
+        <h2>{t('finale','thank_you')}</h2>
       </PhaseCallout>
     </div>
     );

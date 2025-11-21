@@ -5,6 +5,7 @@ import dragonflyVideo from '../../assets/PhaseDragonfly/dragonfly.mp4';
 import { setDuck } from '../../audio/bgm';
 import { Button } from '../../shared/ui/Button';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
+import { t } from '../../shared/i18n/strings';
 
 export default function PhaseDragonfly(){
   const send = useApp(s=>s.send);
@@ -139,11 +140,11 @@ export default function PhaseDragonfly(){
         fadeMs={1000}
         dimBackground={true}
         backdropOpacity={0.9}
-        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>잠자리를 잡으러 간다.</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>go back to the start</p></>}
-        onAction={() => { console.log('restart'); setShowCallout(false); setShowGame(true); restart();}}
+        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','start_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','start_button_sub')}</p></>}
+        onAction={() => { setShowCallout(false); setShowGame(true); restart();}}
       >
-        <h3>어린 시설 기억을 떠올린 제임스가<br/>잠자리를 잡고 싶어합니다.</h3>
-        <p>As James recalls his childhood, <br/> he wants to catch a dragonfly again.</p>
+        <h3>{t('dragonfly','intro_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>
+        <p>{t('dragonfly','intro_desc').split('\n').map((line, i) => (<span key={i}>{line}{i !== t('dragonfly','intro_desc').split('\n').length-1 && <br/>}</span>))}</p>
       </PhaseCallout>
       }
 
@@ -154,17 +155,15 @@ export default function PhaseDragonfly(){
         fadeMs={1000}
         dimBackground={true}
         backdropOpacity={0.9}
-        buttonLabel={<>
-          <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>계속진행하기.</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>tap to continue</p>
-        </>}
+        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','ending_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','ending_button_sub')}</p></>}
         onAction={() => { 
           console.log('endding');
           send({ type: 'catchDragonfly', payload: { count: defaultMaxScore } });
           setShowEnddingCallout(false);
         }}
       >
-        <h3>잠시였지만, 당신과 잠자리를 잡는 그 순간 동안 <br/>제임스의 고통은 기쁨에 가려졌습니다.</h3>
-        <p>For a brief moment, <br/> as he caught dragonflies with you, <br/>joy gently covered James’s pain.</p>
+        <h3>{t('dragonfly','ending_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>
+        <p>{t('dragonfly','ending_desc').split('\n').map((line, i) => (<span key={i}>{line}{i !== t('dragonfly','ending_desc').split('\n').length-1 && <br/>}</span>))}</p>
       </PhaseCallout>}
 
       {showGame && (
@@ -180,12 +179,12 @@ export default function PhaseDragonfly(){
           boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
         }}>
           <div style={{ display: 'grid', gap: 2 }}>
-            <span style={{ fontSize: 12, opacity: 0.85 }}>잠자리</span>
+            <span style={{ fontSize: 12, opacity: 0.85 }}>{t('dragonfly','hud_score_label')}</span>
             <strong style={{ fontSize: 16, lineHeight: 1 }}>{score}</strong>
           </div>
           <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)' }} />
           <div style={{ display: 'grid', gap: 2 }}>
-            <span style={{ fontSize: 12, opacity: 0.85 }}>남은 시간</span>
+            <span style={{ fontSize: 12, opacity: 0.85 }}>{t('dragonfly','hud_time_label')}</span>
             <strong style={{ fontSize: 16, lineHeight: 1 }}>{timeLeft}s</strong>
           </div>
         </div>

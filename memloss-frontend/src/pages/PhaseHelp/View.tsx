@@ -4,6 +4,7 @@ import { setDuck } from '../../audio/bgm';
 import intro2Video from '../../assets/PhaseHelp/INTRO_40sec.mp4';
 import { useRef } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
+import { t } from '../../shared/i18n/strings';
 
 export default function PhaseHelp(){
   const send = useApp(s=>s.send);
@@ -24,12 +25,12 @@ export default function PhaseHelp(){
       <PhaseCallout 
         videoRef={videoRef} 
         showAtSec={33} 
-        buttonLabel={<> <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>같이 나간다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>follow him </p> </>} 
+        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('help','follow_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('help','follow_sub')}</p></>} 
         onAction={()=>send({type:'consentYes'})}
-        secondaryButtonLabel={<> <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>머문다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>stay here </p> </>} 
+        secondaryButtonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('help','stay_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('help','stay_sub')}</p></>} 
         onSecondaryAction={()=>send({type:'consentNo'})}>
-        <h3>제임스가 정원으로 걸어나가고 있습니다. <br/> 같이 나가시겠습니까?</h3>
-        <p>james is walking to the garden. <br/> do you want to go with him?</p>
+        <h3 style={{ whiteSpace: 'pre-line' }}>{t('help','callout_title')}</h3>
+        <p style={{ whiteSpace: 'pre-line' }}>{t('help','callout_desc')}</p>
       </PhaseCallout>
     </div>
   );
