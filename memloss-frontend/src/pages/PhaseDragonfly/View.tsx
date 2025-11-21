@@ -3,17 +3,29 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../../store/app';
 import dragonflyVideo from '../../assets/PhaseDragonfly/dragonfly.mp4';
 import { setDuck } from '../../audio/bgm';
+import { Button } from '../../shared/ui/Button';
+import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 
 export default function PhaseDragonfly(){
   const send = useApp(s=>s.send);
+  const [showCallout, setShowCallout] = useState(false);
+  const [showEnddingCallout, setShowEnddingCallout] = useState(false);
+  const [showGame, setShowGame] = useState(false);
 
+  const defaultTime = 40;
+  const defaultScore = 11;
+  const defaultMaxScore = 12;
   const containerRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x: 100, y: 100 });
   const [vel, setVel] = useState({ vx: 2, vy: 1.6 });
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [score, setScore] = useState(defaultScore);
+  const [timeLeft, setTimeLeft] = useState(defaultTime);
   const [running, setRunning] = useState(true);
   const size = useMemo(() => ({ w: 160, h: 160 }), []);
+
+  useEffect(() => {
+    setShowCallout(true);
+  }, []);
 
   useEffect(() => {
     if (!running) return;
@@ -33,7 +45,7 @@ export default function PhaseDragonfly(){
         setVel({ vx: nvx, vy: nvy });
         return { x: nx, y: ny };
       });
-    }, 16);
+    }, 12);
     return () => clearInterval(id);
   }, [running, vel.vx, vel.vy, size.w, size.h]);
 
@@ -98,12 +110,17 @@ export default function PhaseDragonfly(){
 
     setPos({ x: nx, y: ny });
 
-    send({ type: 'catchDragonfly', payload: { count: newScore } });
+    if (newScore >= defaultMaxScore) {
+      setShowEnddingCallout(true);
+    } else {
+      send({ type: 'catchDragonfly', payload: { count: newScore } });
+    }
+    
   };
 
   const restart = () => {
-    setScore(0);
-    setTimeLeft(30);
+    setScore(defaultScore);
+    setTimeLeft(defaultTime);
     setRunning(true);
     setPos({ x: 100, y: 100 });
     randomizeVelocity();
@@ -115,15 +132,72 @@ export default function PhaseDragonfly(){
       style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}
       className="p-0"
     >
-      <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 10, display: 'flex', gap: 12 }}>
-        <div>점수: {score}</div>
-        <div>남은 시간: {timeLeft}s</div>
-        {!running && (
-          <button onClick={restart} style={{ padding: '6px 10px', border: '1px solid #999', borderRadius: 6 }}>
-            다시 시작
-          </button>
-        )}
+      {!showEnddingCallout && <PhaseCallout
+        alignH="center"
+        alignV="middle"
+        visible={showCallout}
+        fadeMs={1000}
+        dimBackground={true}
+        backdropOpacity={0.9}
+        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>잠자리를 잡으러 간다.</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>go back to the start</p></>}
+        onAction={() => { console.log('restart'); setShowCallout(false); setShowGame(true); restart();}}
+      >
+        <h3>어린 시설 기억을 떠올린 제임스가<br/>잠자리를 잡고 싶어합니다.</h3>
+        <p>As James recalls his childhood, <br/> he wants to catch a dragonfly again.</p>
+      </PhaseCallout>
+      }
+
+      {!showCallout && <PhaseCallout
+        alignH="center"
+        alignV="middle"
+        visible={showEnddingCallout}
+        fadeMs={1000}
+        dimBackground={true}
+        backdropOpacity={0.9}
+        buttonLabel={<>
+          <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>계속진행하기.</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>tap to continue</p>
+        </>}
+        onAction={() => { 
+          console.log('endding');
+          send({ type: 'catchDragonfly', payload: { count: defaultMaxScore } });
+          setShowEnddingCallout(false);
+        }}
+      >
+        <h3>잠시였지만, 당신과 잠자리를 잡는 그 순간 동안 <br/>제임스의 고통은 기쁨에 가려졌습니다.</h3>
+        <p>For a brief moment, <br/> as he caught dragonflies with you, <br/>joy gently covered James’s pain.</p>
+      </PhaseCallout>}
+
+      {showGame && (
+      <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 10 }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          padding: '8px 12px',
+          background: 'rgba(0,0,0,0.35)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: 12,
+          boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
+        }}>
+          <div style={{ display: 'grid', gap: 2 }}>
+            <span style={{ fontSize: 12, opacity: 0.85 }}>잠자리</span>
+            <strong style={{ fontSize: 16, lineHeight: 1 }}>{score}</strong>
+          </div>
+          <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)' }} />
+          <div style={{ display: 'grid', gap: 2 }}>
+            <span style={{ fontSize: 12, opacity: 0.85 }}>남은 시간</span>
+            <strong style={{ fontSize: 16, lineHeight: 1 }}>{timeLeft}s</strong>
+          </div>
+        </div>
       </div>
+      )}
+      {/* Centered restart button when game is not running */}
+      {showGame && !running && (
+        <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', zIndex: 15 }}>
+          <Button onClick={restart}>다시 시작</Button>
+        </div>
+      )}
+      {showGame && !showEnddingCallout && (
       <div
         onPointerDown={handleCatch}
         style={{
@@ -150,6 +224,7 @@ export default function PhaseDragonfly(){
           style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }}
         />
       </div>
+      )}
     </div>
   );
 }
