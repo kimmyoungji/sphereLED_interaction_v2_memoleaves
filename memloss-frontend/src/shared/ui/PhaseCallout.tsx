@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import './PhaseCallout.css';
 
-type Align = 'top' | 'center' | 'bottom';
+type AlignH = 'left' | 'center' | 'right';
+type AlignV = 'top' | 'middle' | 'bottom';
 
 type PhaseCalloutProps = {
-  align?: Align;
+  alignH?: AlignH;
+  alignV?: AlignV;
   /** If provided, controls visibility. If omitted, visibility can be driven by videoRef+showAtSec. */
   visible?: boolean;
   /** Optional: when provided with videoRef, show when currentTime >= showAtSec (seconds). */
@@ -15,6 +17,10 @@ type PhaseCalloutProps = {
   videoRef?: RefObject<HTMLVideoElement | null>;
   /** Fade duration in ms (default 600). */
   fadeMs?: number;
+  /** Dim the full-screen background behind the callout (default true). */
+  dimBackground?: boolean;
+  /** Backdrop opacity 0..1 (default 0.35). Only used when dimBackground is true. */
+  backdropOpacity?: number;
   children: ReactNode;
   buttonLabel?: ReactNode;
   onAction?: () => void;
@@ -22,7 +28,7 @@ type PhaseCalloutProps = {
   onSecondaryAction?: () => void;
 };
 
-export function PhaseCallout({ align = 'center', visible, showAtSec, videoRef, fadeMs = 600, children, buttonLabel, onAction, secondaryButtonLabel, onSecondaryAction }: PhaseCalloutProps) {
+export function PhaseCallout({ alignH = 'center', alignV = 'middle', visible, showAtSec, videoRef, fadeMs = 600, dimBackground = true, backdropOpacity = 0.35, children, buttonLabel, onAction, secondaryButtonLabel, onSecondaryAction }: PhaseCalloutProps) {
   const [autoVisible, setAutoVisible] = useState(false);
 
   useEffect(() => {
@@ -37,8 +43,10 @@ export function PhaseCallout({ align = 'center', visible, showAtSec, videoRef, f
   }, [videoRef, showAtSec, visible]);
 
   const isVisible = visible !== undefined ? visible : autoVisible;
-  const rootClass = `phase-callout phase-callout--${align} ${isVisible ? 'phase-callout--visible' : ''}`;
-  const style = { ['--pc-fade' as any]: `${fadeMs}ms` };
+  const rootClass = `phase-callout phase-callout--v-${alignV} phase-callout--h-${alignH}  ${isVisible ? 'phase-callout--visible' : ''}`;
+  const safeOpacity = Math.max(0, Math.min(1, backdropOpacity ?? 0.35));
+  const backdrop = dimBackground ? `rgba(0,0,0,${safeOpacity})` : 'transparent';
+  const style = { ['--pc-fade' as any]: `${fadeMs}ms`, ['--pc-backdrop' as any]: backdrop };
   return (
     <div className={rootClass} style={style}>
       <div className="phase-callout__wrap">

@@ -15,14 +15,14 @@
   pointer-events: none; /* let background interact unless on controls */
   opacity: 0;
   transition: opacity var(--pc-fade, 600ms) ease;
-  z-index: 10; /* ensure overlay sits above background video */
+  z-index: 100; /* ensure overlay sits above background video */
 }
 
 .phase-callout::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: var(--pc-backdrop, rgba(0,0,0,0.35));
   pointer-events: none;
   z-index: -1;
 }
@@ -31,6 +31,9 @@
 .phase-callout--h-left { justify-content: flex-start; }
 .phase-callout--h-center { justify-content: center; }
 .phase-callout--h-right { justify-content: flex-end; }
+.phase-callout--v-top { align-items: flex-start; }
+.phase-callout--v-middle { align-items: center; }
+.phase-callout--v-bottom { align-items: flex-end; }
 
 .phase-callout__wrap {
   width: 100%;
@@ -111,3 +114,4 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+
