@@ -24,7 +24,7 @@ export default function PhaseInit(){
         onEnded={() => setDuck(1)}
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
       />
-      <PhaseCallout videoRef={videoRef} showAtSec={1} align="center" buttonLabel="Tap to start" onAction={onClick}>
+      <PhaseCallout videoRef={videoRef} showAtSec={1} buttonLabel="Tap to start" onAction={onClick}>
         <h3>헤드셋이나 이어폰 착용시, <br/> 더 입체적인 관람이 가능합니다.</h3>
         <p>Wear a headset or earphone <br/> for a more immersive experience.</p>
       </PhaseCallout>

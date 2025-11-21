@@ -24,7 +24,6 @@ export default function PhaseHelp(){
       <PhaseCallout 
         videoRef={videoRef} 
         showAtSec={33} 
-        align="center" 
         buttonLabel={<> <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>같이 나간다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>follow him </p> </>} 
         onAction={()=>send({type:'consentYes'})}
         secondaryButtonLabel={<> <p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>머문다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>stay here </p> </>} 

@@ -120,7 +120,6 @@ export default function PhaseGardenAndDust(){
 
       {showCallout && (
         <PhaseCallout 
-          align="center"
           videoRef={videoRef}
           showAtSec={2}
           buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>정원을 둘러본다 </p> <p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>explore the garden </p></>}
