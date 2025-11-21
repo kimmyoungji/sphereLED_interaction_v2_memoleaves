@@ -123,7 +123,7 @@ public class PhaseService {
           int count = (countObj instanceof Number) ? ((Number) countObj).intValue() : 0;
           emit(OutEvent.catchDragonfly(count));
 
-          if (count >= 16 && phase.get() == Phase.DRAGONFLY) setPhase(Phase.FINALE);
+          if (count >= 12 && phase.get() == Phase.DRAGONFLY) setPhase(Phase.FINALE);
         } 
       }
     } catch (Exception ex) {
