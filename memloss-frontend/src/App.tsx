@@ -62,14 +62,12 @@ export default function App(){
   };
   const View = views[phase];
 
-  console.log('[App] phase=', phase);
-  console.log('[App] View=', View);
-
   // add button to test switching phase and view
   return (
       <Screen>
         <View />
-        {phase !== 'FINALE' && <PhaseNav />}
+        {/* {phase !== 'FINALE' && <PhaseNav />} */}
+        <PhaseNav />
       </Screen>
   );
 }

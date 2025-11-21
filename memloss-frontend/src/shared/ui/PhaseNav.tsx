@@ -9,7 +9,7 @@ export function PhaseNav() {
   const send = useApp(s => s.send);
   const [busy, setBusy] = useState(false);
 
-  const go = async (dir: 'prev' | 'next') => {
+  const go = async (dir: 'prev' | 'next' | 'init') => {
     try {
       setBusy(true);
       send({ type: dir });
@@ -26,7 +26,8 @@ export function PhaseNav() {
     <div className="phase-nav" role="navigation" aria-label="Phase navigation">
       <Button className="phase-nav__btn" disabled={busy} onClick={() => go('prev')}>Prev</Button>
       <span className="phase-nav__label">{phase}</span>
-      <Button className="phase-nav__btn" disabled={busy} onClick={() => go('next')}>Next</Button>
+      {phase !== 'FINALE' ? <Button className="phase-nav__btn" disabled={busy} onClick={() => go('next')}>Next</Button> : 
+      <Button className="phase-nav__btn" disabled={busy} onClick={() => go('init')}>HOME</Button>}
     </div>
   );
 }
