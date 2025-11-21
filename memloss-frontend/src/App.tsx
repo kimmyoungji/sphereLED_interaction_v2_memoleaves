@@ -14,8 +14,10 @@ import type { ComponentType } from 'react';
 import Screen from './shared/ui/Screen';
 import { PhaseNav } from './shared/ui/PhaseNav';
 import { setDuck } from './audio/bgm';
+import { setLocale } from './shared/i18n/strings';
 
 export default function App(){
+  setLocale('ko');
   const phase: Phase = useApp((s: State)=>s.phase);
   useEffect(() => {
     const start = () => { ensureStarted(); };
