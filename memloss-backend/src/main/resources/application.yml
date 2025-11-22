@@ -8,3 +8,9 @@ spring:
 management:
   endpoints.web.exposure.include: health,info
   endpoint.health.probes.enabled: true
+
+capacity:
+  maxSessions: 4
+  heartbeatIntervalSeconds: 30
+  staleGraceSeconds: 90
+  cleanupIntervalMs: 30000

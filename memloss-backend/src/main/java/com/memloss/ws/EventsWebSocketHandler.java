@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memloss.domain.InEvent;
 import com.memloss.domain.OutEvent;
 import com.memloss.service.PhaseService;
+import com.memloss.service.SessionCapService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -17,14 +18,16 @@ import java.util.List;
 @Component
 public class EventsWebSocketHandler implements WebSocketHandler {
   private final PhaseService phases;
+  private final SessionCapService cap;
   private final ObjectMapper om = new ObjectMapper();
   private final Logger logger = LoggerFactory.getLogger(EventsWebSocketHandler.class);
   private final java.util.Set<String> sessions =
       java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
 
 
-  public EventsWebSocketHandler(PhaseService phases) {
+  public EventsWebSocketHandler(PhaseService phases, SessionCapService cap) {
     this.phases = phases;
+    this.cap = cap;
   }
 
   @Override
@@ -32,6 +35,14 @@ public class EventsWebSocketHandler implements WebSocketHandler {
 
     // sessionId를 이용하여 각 클라이언트의 상태를 관리
     String id = session.getId();
+
+    // capacity check: register or reject
+    boolean ok = cap.tryRegister(id);
+    if (!ok) {
+      logger.warn("[WS] reject due to capacity: {} (active={}/{})", id, cap.activeCount(), cap.maxSessions());
+      return session.close(new org.springframework.web.reactive.socket.CloseStatus(4003, "CAP_REACHED"));
+    }
+
     sessions.add(id);
 
     logger.info("[WS] connected: {} (active={})", id, sessions.size());
@@ -64,6 +75,7 @@ public class EventsWebSocketHandler implements WebSocketHandler {
       .and(in)
       .doFinally(sig -> {
         sessions.remove(id);
+        cap.unregister(id);
         logger.info("[WS] disconnected({}): {} (active={})", sig, id, sessions.size());
       });
   }

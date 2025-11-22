@@ -1,6 +1,6 @@
 // src/lib/ws.ts
 import { useApp } from '../store/app';
-import type { InEvent, Phase } from '../types/events';
+import type { InEvent } from '../types/events';
 const WS_DEBUG = import.meta.env.VITE_WS_DEBUG === 'true';
 
 export function initWebSocket() {
@@ -10,8 +10,6 @@ export function initWebSocket() {
   const url = import.meta.env.VITE_WS_URL as string;
 
   console.log(`websocket url: ${url}`)
-
-  const app = useApp.getState();
 
   const ws = new WebSocket(url);
   useApp.setState({ ws });
@@ -36,9 +34,15 @@ export function initWebSocket() {
 
     } catch(e) { console.warn('WS parse error', e); }
   };
-  ws.onclose = () => {
+  ws.onclose = (ev: CloseEvent) => {
+    if (ev.code === 4003) {
+      console.warn('[WS] closed by server: capacity reached (4003)');
+      alert('Server capacity is full. Please try again later.');
+      return;
+    }
     console.warn('[WS] closed, retrying in 1s');
     setTimeout(initWebSocket, 1000);
   };
 }
+
 
