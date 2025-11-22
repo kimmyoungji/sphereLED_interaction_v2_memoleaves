@@ -15,10 +15,11 @@ export function useAudioRMS() {
       analyser = ctx.createAnalyser();
       analyser.fftSize = 512;
       src.connect(analyser);
-      data = new Uint8Array(analyser.frequencyBinCount);
+      // For time-domain data, buffer length should be fftSize
+      data = new Uint8Array(analyser.fftSize);
 
       const loop = () => {
-        analyser.getByteTimeDomainData(data);
+        analyser.getByteTimeDomainData(data as unknown as Uint8Array<ArrayBuffer>);
         // RMS 계산
         let sum=0;
         for (let i=0;i<data.length;i++){
