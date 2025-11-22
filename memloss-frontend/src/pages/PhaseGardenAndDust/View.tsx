@@ -33,7 +33,7 @@ export default function PhaseGardenAndDust(){
   const nowMs = () => (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
 
   // 입김(호흡) 센서 값: value(세기), isBlowing(감지 여부), onTick(주기적 콜백)
-  const { value: breath, isBlowing, onTick } = useBreath({
+  const { value: breath, onTick } = useBreath({
     tickHz: 2,      // 전송 주기(Hz)
     minDelta: 0.03, // 변화량이 임계치 이상일 때만 전송
   });

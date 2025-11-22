@@ -1,5 +1,6 @@
 // src/pages/PhaseDragonfly/View.tsx
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../../store/app';
 import dragonflyVideo from '../../assets/PhaseDragonfly/dragonfly.mp4';
 import { setDuck } from '../../audio/bgm';
