@@ -71,7 +71,7 @@ const ko: Dict = {
   },
   help: {
     callout_title: '제임스가 정원으로 걸어 나가고 있습니다.\n함께 나가시겠습니까?',
-    callout_desc: '제임스가 정원으로 걸어 나가고 있습니다.\n함께 나가시겠습니까?',
+    callout_desc: 'James is walking out to the garden.\nWould you like to join him?',
     follow_main: '같이 나간다',
     follow_sub: 'follow him',
     stay_main: '머문다',
@@ -116,9 +116,9 @@ const ko: Dict = {
     hud_score_label: '잠자리',
     hud_time_label: '남은 시간',
     ending_title:
-      '당신과 잠자리를 잡는 그 순간,\n제임스는 잠시나마 \n아픔을 잊고 웃을 수 있었습니다.',
-    ending_desc:
       '잠시였지만,\n당신과 잠자리를 잡는 동안\n제임스는 아픔을 잊고 기뻐했습니다.',
+    ending_desc:
+      'In the moment he caught dragonflies with you,\nJames briefly forgot his pain and smiled.',
     ending_button_main: '계속 진행하기',
     ending_button_sub: 'Tap to continue',
   },
