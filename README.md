@@ -21,3 +21,8 @@ cd memloss-backend
 ./gradlew build
 ./gradlew bootRun
 ```
+
+# EC2 SSH 접속 명령어
+```
+ssh -i sphereLED-interaction-memloss-seoul-key.pem ec2-user@ec2-43-201-105-0.ap-northeast-2.compute.amazonaws.com
+```
