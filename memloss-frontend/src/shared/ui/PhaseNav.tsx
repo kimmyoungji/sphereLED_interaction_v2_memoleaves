@@ -1,6 +1,7 @@
 // src/shared/ui/PhaseNav.tsx
 import { useState } from 'react';
 import { useApp } from '../../store/app';
+import type { Phase } from '../../types/events';
 import './PhaseNav.css';
 import { Button } from './Button';
 
@@ -8,6 +9,15 @@ export function PhaseNav() {
   const phase = useApp(s => s.phase);
   const send = useApp(s => s.send);
   const [busy, setBusy] = useState(false);
+
+  const labels: Record<Phase, string> = {
+    INIT: 'Home',
+    HELP: 'Help',
+    GARDEN_AND_DUST: 'Garden',
+    TIMELINE: 'Timeline',
+    DRAGONFLY: 'Dragonfly',
+    FINALE: 'Finale',
+  };
 
   const go = async (dir: 'prev' | 'next' | 'init') => {
     try {
@@ -25,7 +35,7 @@ export function PhaseNav() {
   return (
     <div className="phase-nav" role="navigation" aria-label="Phase navigation">
       <Button className="phase-nav__btn" disabled={busy} onClick={() => go('prev')}>Prev</Button>
-      <span className="phase-nav__label">{phase}</span>
+      <span className="phase-nav__label">{labels[phase]}</span>
       {phase !== 'FINALE' ? <Button className="phase-nav__btn" disabled={busy} onClick={() => go('next')}>Next</Button> : 
       <Button className="phase-nav__btn" disabled={busy} onClick={() => go('init')}>HOME</Button>}
     </div>
