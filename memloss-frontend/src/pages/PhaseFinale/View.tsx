@@ -1,6 +1,6 @@
 // src/pages/PhaseFinale.tsx
 import { useApp } from '../../store/app';
-import outroVideoWithText from '../../assets/PhaseFinale/OUTRO_67sec.mp4';
+import outroVideoWithText from '../../assets/PhaseFinale/251123_OUTRO.mp4';
 import { setDuck } from '../../audio/bgm';
 import { useRef, useState } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';

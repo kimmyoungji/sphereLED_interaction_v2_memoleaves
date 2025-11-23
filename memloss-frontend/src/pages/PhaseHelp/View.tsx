@@ -1,7 +1,7 @@
 // src/pages/PhaseHelp/View.tsx
 import { useApp } from '../../store/app';
 import { setDuck } from '../../audio/bgm';
-import intro2Video from '../../assets/PhaseHelp/INTRO_40sec.mp4';
+import intro2Video from '../../assets/PhaseHelp/251123_INTRO.mp4';
 import { useRef } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import { t } from '../../shared/i18n/strings';
