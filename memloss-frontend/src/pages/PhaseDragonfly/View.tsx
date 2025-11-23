@@ -6,6 +6,8 @@ import { setDuck } from '../../audio/bgm';
 import { Button } from '../../shared/ui/Button';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import { t } from '../../shared/i18n/strings';
+import { VideoPreloader } from '../../shared/ui/VideoPreloader';
+import finaleVideo from '../../assets/PhaseFinale/REAL FINAL_OUTRO_1123.mp4';
 
 export default function PhaseDragonfly(){
   const send = useApp(s=>s.send);
@@ -214,6 +216,8 @@ export default function PhaseDragonfly(){
           loop
           muted
           playsInline
+          preload="auto"
+          poster="/assets/PhaseDragonfly/dragonfly_poster.jpeg"
           onPlay={() => setDuck(0.25)}
           onPause={() => setDuck(1)}
           onEnded={() => setDuck(1)}
@@ -221,6 +225,8 @@ export default function PhaseDragonfly(){
         />
       </div>
       )}
+      {/* Preload next phase (Finale) video to reduce start latency */}
+      <VideoPreloader src={finaleVideo} />
     </div>
   );
 }

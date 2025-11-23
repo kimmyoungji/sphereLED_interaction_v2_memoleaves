@@ -6,6 +6,8 @@ import { useBreath } from '../../hooks/useBreath';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import intro2Video from '../../assets/PhaseGardenAndDust/INTRO(3)_Opening the door.mp4';
 import './View.css';
+import { VideoPreloader } from '../../shared/ui/VideoPreloader';
+import dragonflyVideo from '../../assets/PhaseDragonfly/dragonfly.mp4';
 
 export default function PhaseGardenAndDust(){
   const send = useApp(s => s.send);                                // 서버로 OutEvent를 보내는 함수
@@ -136,6 +138,8 @@ export default function PhaseGardenAndDust(){
         ref={videoRef}
         autoPlay
         playsInline
+        preload="auto"
+        poster="/assets/PhaseGardenAndDust/openning_door_poster.png"
         className="gd-introVideo"
         style={{
           opacity: videoFaded ? 0 : 1,
@@ -175,7 +179,7 @@ export default function PhaseGardenAndDust(){
           최대한 길게 입김을 불어 먼지를 날려보세요. <br/> 제임스의 기억이 보일거에요.<br/>blow into the sphere to send dust. <br/> you will see james' memories.
         </p>
       )}
-
+      <VideoPreloader src={dragonflyVideo} />
     </div>
   );
 }

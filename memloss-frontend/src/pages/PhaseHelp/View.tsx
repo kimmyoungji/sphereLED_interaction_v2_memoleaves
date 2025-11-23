@@ -1,10 +1,12 @@
 // src/pages/PhaseHelp/View.tsx
 import { useApp } from '../../store/app';
 import { setDuck } from '../../audio/bgm';
-import intro2Video from '../../assets/PhaseHelp/251123_INTRO.mp4';
+import intro2Video from '../../assets/PhaseHelp/Final_INTRO.mp4';
 import { useRef } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import { t } from '../../shared/i18n/strings';
+import { VideoPreloader } from '../../shared/ui/VideoPreloader';
+import gardenIntro from '../../assets/PhaseGardenAndDust/INTRO(3)_Opening the door.mp4';
 
 export default function PhaseHelp(){
   const send = useApp(s=>s.send);
@@ -16,6 +18,8 @@ export default function PhaseHelp(){
         src={intro2Video}
         autoPlay
         playsInline
+        preload="auto"
+        poster="/assets/PhaseHelp/intro_poster.png"
         ref={videoRef}
         onPlay={() => setDuck(0)}
         onPause={() => setDuck(1)}
@@ -32,6 +36,8 @@ export default function PhaseHelp(){
         <h3 style={{ whiteSpace: 'pre-line' }}>{t('help','callout_title')}</h3>
         <p style={{ whiteSpace: 'pre-line' }}>{t('help','callout_desc')}</p>
       </PhaseCallout>
+      {/* Preload next phase video to reduce start latency */}
+      <VideoPreloader src={gardenIntro} />
     </div>
   );
 }
