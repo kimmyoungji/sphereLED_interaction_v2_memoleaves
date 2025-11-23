@@ -14,7 +14,7 @@ export default function PhaseDragonfly(){
   const [showGame, setShowGame] = useState(false);
 
   const defaultTime = 40;
-  const defaultScore = 11;
+  const defaultScore = 0;
   const defaultMaxScore = 12;
   const containerRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x: 100, y: 100 });
@@ -71,45 +71,42 @@ export default function PhaseDragonfly(){
     if (!running) return;
     const newScore = score + 1;
     setScore(newScore);
-    randomizeVelocity();
     const el = containerRef.current;
     const cw = el ? el.clientWidth : window.innerWidth;
     const ch = el ? el.clientHeight : window.innerHeight;
-    
-    // adjust velocity inward based on spawn side
-    setVel(v => {
-      let { vx, vy } = v;
-      if (side === 0) vx = Math.abs(vx);        // from left -> right
-      if (side === 1) vx = -Math.abs(vx);       // from right -> left
-      if (side === 2) vy = Math.abs(vy);        // from top -> down
-      if (side === 3) vy = -Math.abs(vy);       // from bottom -> up
-      return { vx, vy };
-    });
 
     // pick one of 4 sides: 0:left, 1:right, 2:top, 3:bottom
     const side = Math.floor(Math.random() * 4);
     let nx = 0, ny = 0;
 
     switch (side) {
-      case 0: // left
+      case 0: // left (spawn just outside)
         nx = -size.w;
         ny = Math.random() * (ch - size.h);
         break;
-      case 1: // right
+      case 1: // right (spawn just outside)
         nx = cw;
         ny = Math.random() * (ch - size.h);
         break;
-      case 2: // top
+      case 2: // top (spawn just outside)
         nx = Math.random() * (cw - size.w);
         ny = -size.h;
         break;
-      case 3: // bottom
+      case 3: // bottom (spawn just outside)
         nx = Math.random() * (cw - size.w);
         ny = ch;
         break;
     }
 
     setPos({ x: nx, y: ny });
+
+    // ensure velocity points inward toward screen center so it re-enters view
+    const cx = cw / 2, cy = ch / 2;
+    const dirX = cx - nx;
+    const dirY = cy - ny;
+    const len = Math.max(1e-3, Math.hypot(dirX, dirY));
+    const s = (2 + Math.random() * 3) * 1.5; // reuse speed factor
+    setVel({ vx: (dirX / len) * s, vy: (dirY / len) * s });
 
     if (newScore >= defaultMaxScore) {
       setShowEnddingCallout(true);
@@ -133,7 +130,7 @@ export default function PhaseDragonfly(){
       style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}
       className="p-0"
     >
-      {!showEnddingCallout && <PhaseCallout
+      {!showEnddingCallout && showCallout && <PhaseCallout
         alignH="center"
         alignV="middle"
         visible={showCallout}
@@ -148,7 +145,7 @@ export default function PhaseDragonfly(){
       </PhaseCallout>
       }
 
-      {!showCallout && <PhaseCallout
+      {!showCallout && showEnddingCallout && <PhaseCallout
         alignH="center"
         alignV="middle"
         visible={showEnddingCallout}
@@ -180,7 +177,7 @@ export default function PhaseDragonfly(){
         }}>
           <div style={{ display: 'grid', gap: 2 }}>
             <span style={{ fontSize: 12, opacity: 0.85 }}>{t('dragonfly','hud_score_label')}</span>
-            <strong style={{ fontSize: 16, lineHeight: 1 }}>{score}</strong>
+            <strong style={{ fontSize: 16, lineHeight: 1 }}>{score}/{defaultMaxScore}</strong>
           </div>
           <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)' }} />
           <div style={{ display: 'grid', gap: 2 }}>
