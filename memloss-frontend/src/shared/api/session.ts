@@ -1,8 +1,8 @@
 // src/shared/api/session.ts
 const BASE = import.meta.env.VITE_API_URL || '';
-const REGISTER = `${BASE}/api/sessions/register`;
-const HEARTBEAT = `${BASE}/api/sessions/heartbeat`;
-const UNREGISTER = `${BASE}/api/sessions/unregister`;
+const REGISTER = `${BASE}/sessions/register`;
+const HEARTBEAT = `${BASE}/sessions/heartbeat`;
+const UNREGISTER = `${BASE}/sessions/unregister`;
 
 const KEY = 'memloss.sessionId';
 
