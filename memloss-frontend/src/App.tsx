@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from './store/app';
 import type { State } from './store/app';
 import { ensureStarted } from './audio/bgm';
@@ -62,14 +62,38 @@ export default function App(){
     DRAGONFLY: PhaseDragonfly,
     FINALE: PhaseFinale
   };
+  
   const View = views[phase];
+  const [showNav, setShowNav] = useState(false);
 
   // add button to test switching phase and view
   return (
       <Screen>
         <View />
-        {/* {phase !== 'FINALE' && <PhaseNav />} */}
-        <PhaseNav />
+        <button
+          onClick={() => setShowNav(v => !v)}
+          style={{
+            position: 'fixed',
+            right: '12px',
+            bottom: '12px',
+            width: '24px',
+            height: '24px',
+            borderRadius: '9999px',
+            border: 'none',
+            background: 'rgba(255,255,255,0.15)',
+            color: 'transparent',
+            fontSize: '0',
+            lineHeight: '0',
+            textAlign: 'center',
+            cursor: 'pointer',
+            zIndex: 1000,
+          }}
+          aria-label="Toggle phase navigation"
+          title="Toggle phase navigation"
+        >
+          {/* minimal dot button */}
+        </button>
+        {showNav && <PhaseNav/>}
       </Screen>
   );
 }
