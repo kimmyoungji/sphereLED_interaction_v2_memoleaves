@@ -35,6 +35,9 @@ public class PhaseService {
   );
   private static final long STEP_MIN_INTERVAL_MS = 300; // debounce for prev/next
   private volatile long lastStepAtMs = 0L;
+  // GARDEN_AND_DUST 단계에서 intensity 임계(>=0.65) 상향 돌파 횟수 카운트
+  private int breathHighCount = 0;
+  private boolean breathWasHigh = false;
 
   public Phase getPhase() { return phase.get(); }
   public Flux<OutEvent> stream() { return bus.asFlux(); }
@@ -97,8 +100,24 @@ public class PhaseService {
 
           emit(OutEvent.sphereOpacity(intensity)); // structured payload to FE
           
-          // 간단 누적 임계 (실전은 EMA/윈도우)opacity
-          if (intensity > 0.7 && phase.get() == Phase.GARDEN_AND_DUST) setPhase(Phase.TIMELINE);
+          // 임계 상향 돌파(>=0.65) 3회 이상이면 GARDEN_AND_DUST -> TIMELINE 전환
+          if (phase.get() == Phase.GARDEN_AND_DUST) {
+            boolean isHigh = intensity >= 0.65;
+            if (!breathWasHigh && isHigh) {
+              breathHighCount++;
+            }
+            breathWasHigh = isHigh; // 하강 시(false)로 돌아오면 다음 상향 돌파를 새로 카운트
+
+            if (breathHighCount >= 3) {
+              breathHighCount = 0;
+              breathWasHigh = false;
+              setPhase(Phase.TIMELINE);
+            }
+          } else {
+            // 다른 단계에서는 카운터 리셋
+            breathHighCount = 0;
+            breathWasHigh = false;
+          }
         }
 
         /* timeline */
