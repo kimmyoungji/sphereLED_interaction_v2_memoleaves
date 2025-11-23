@@ -28,7 +28,7 @@ export default function PhaseFinale(){
       />
       <PhaseCallout 
         videoRef={videoRef} 
-        showAtSec={45} 
+        showAtSec={50} 
         buttonLabel={t('finale','restart_cta')} 
         onAction={()=>send({type:'init'})}>
           <div>
