@@ -116,15 +116,15 @@ const ko: Dict = {
     hud_score_label: '잠자리',
     hud_time_label: '남은 시간',
     ending_title:
-      '잠시였지만,\n당신과 잠자리를 잡는 동안\n제임스는 아픔을 잊고 기뻐했습니다.',
+      '제임스는 즐거웠습니다.',
     ending_desc:
-      'In the moment he caught dragonflies with you,\nJames briefly forgot his pain and smiled.',
+      'James felt happy.',
     ending_button_main: '계속 진행하기',
     ending_button_sub: 'Tap to continue',
   },
   finale: {
     restart_cta: 'Tap to restart',
-    thank_you: '감사합니다.',
+    thank_you: '',
   },
 };
 
