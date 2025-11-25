@@ -209,6 +209,7 @@ export default function PhaseDragonfly(){
         />
       </div>
       )}
+
       {/* Preload next phase (Finale) video to reduce start latency */}
       <VideoPreloader src={finaleVideo} />
     </div>

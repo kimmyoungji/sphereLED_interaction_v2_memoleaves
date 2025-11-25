@@ -28,24 +28,23 @@ export default function PhaseFinale(){
       />
       <PhaseCallout 
         videoRef={videoRef} 
-        showAtSec={50} 
+        showAtSec={55} 
         buttonLabel={t('finale','restart_cta')} 
-        onAction={()=>send({type:'init'})}>
-          <div>
-        [ Thanks to ]
-        <br/>
-        <p>정효정 교수님 <br/>이지용 교수님 <br/>이혜원 대표님 <br/>남기륭 교수님</p>    
-        <br/>
-        
-        [ Made by ]
-        <br/>
-        <p>이예준 <br/>윤미지 <br/>김명지</p>
-        <br/>
-
-        본 작품은 성남문화재단과 바이오헬스COSS,차세대디스플레이COSS,글로벌K-컬처HUSS, 사회구조HUSS사업단의 지원으로 이루어진 2025 ArtTech for LIF E 해커톤의 성과물입니다.
-      </div>
-          <h2>{t('finale','thank_you')}</h2>
+        onAction={()=>send({type:'init'})}
+        footer={
+          <div className="text-center text-white text-sm" style={{ fontSize: "0.5rem", lineHeight: '1.4' }}>
+            <p>Made by</p>
+            <p>이예준 / 윤미지 / 김명지</p>
+            <p>Thanks to</p>
+            <p>정효정 교수님 / 이지용 교수님 / 이혜원 Giioi 대표님 / 남기륭 교수님</p>
+            <br/>
+            본 작품은 성남문화재단과 바이오헬스COSS,차세대디스플레이COSS,글로벌K-컬처HUSS, 사회구조HUSS사업단의 지원으로 이루어진 2025 ArtTech for LIFE 해커톤의 성과물입니다.
+          </div>
+        }
+      >
+        <h2>{t('finale','thank_you')}</h2>
       </PhaseCallout>
+      
       
       
       {/* Preload init phase video so restart is instant */}
