@@ -13,6 +13,7 @@ export default function PhaseGardenAndDust(){
   const send = useApp(s => s.send);                                // 서버로 OutEvent를 보내는 함수
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFaded, setVideoFaded] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);               // Three.js 캔버스를 붙일 DOM 컨테이너
   const sceneRef = useRef<ReturnType<typeof createGardenDustScene> | null>(null); // 생성된 Three.js 씬 핸들 보관
@@ -141,10 +142,39 @@ export default function PhaseGardenAndDust(){
         preload="auto"
         poster="/assets/PhaseGardenAndDust/openning_door_poster.png"
         className="gd-introVideo"
+        onLoadedData={() => {
+          const v = videoRef.current as any;
+          if (v && typeof v.requestVideoFrameCallback === 'function') {
+            v.requestVideoFrameCallback(() => setVideoReady(true));
+          } else {
+            setTimeout(() => setVideoReady(true), 50);
+          }
+        }}
         style={{
-          opacity: videoFaded ? 0 : 1,
+          opacity: videoReady ? (videoFaded ? 0 : 1) : 0,
+          transition: 'opacity 400ms ease',
           filter: videoFaded ? 'blur(12px)' : 'blur(0px)',
           pointerEvents: videoFaded ? 'none' : 'auto',
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 45
+        }}
+      />
+
+      {/* 오버레이 */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: '#000',
+          opacity: videoReady ? 0 : 1,
+          transition: 'opacity 400ms ease',
+          pointerEvents: 'none',
+          zIndex: 110
         }}
       />
 
