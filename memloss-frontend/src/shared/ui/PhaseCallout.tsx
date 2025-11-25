@@ -51,21 +51,29 @@ export function PhaseCallout({ alignH = 'center', alignV = 'middle', visible, sh
     <div className={rootClass} style={style}>
       <div className="phase-callout__wrap">
         <div className="phase-callout__box">
-          <div className="phase-callout__content">{children}</div>
+          <div className="phase-callout__content">{isVisible ? children : null}</div>
           <div className="phase-callout__actions">
-            {buttonLabel ? (
+            {buttonLabel && isVisible ? (
               <button
                 className="phase-callout__btn"
                 onClick={onAction}
-                disabled={!onAction}
-                aria-disabled={!onAction}
-                style={!onAction ? { opacity: 0.5, animation: 'none', cursor: 'default' } : undefined}
+                disabled={!onAction || !isVisible}
+                aria-disabled={!onAction || !isVisible}
+                style={!onAction || !isVisible ? { opacity: 0.5, animation: 'none', cursor: 'default' } : undefined}
               >
                 {buttonLabel}
               </button>
             ) : null}
-            {secondaryButtonLabel && onSecondaryAction ? (
-              <button className="phase-callout__btn" onClick={onSecondaryAction}>{secondaryButtonLabel}</button>
+            {secondaryButtonLabel && onSecondaryAction && isVisible ? (
+              <button
+                className="phase-callout__btn"
+                onClick={onSecondaryAction}
+                disabled={!onSecondaryAction || !isVisible}
+                aria-disabled={!onSecondaryAction || !isVisible}
+                style={!onSecondaryAction || !isVisible ? { opacity: 0.5, animation: 'none', cursor: 'default' } : undefined}
+              >
+                {secondaryButtonLabel}
+              </button>
             ) : null}
           </div>
         </div>
