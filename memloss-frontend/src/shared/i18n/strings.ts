@@ -116,9 +116,9 @@ const ko: Dict = {
     hud_score_label: '잠자리',
     hud_time_label: '남은 시간',
     ending_title:
-      '제임스는 즐거웠습니다.',
+      '제임스가 할 말이 있는 것 같습니다.',
     ending_desc:
-      'James felt happy.',
+      'It seems James got something to say ...',
     ending_button_main: '계속 진행하기',
     ending_button_sub: 'Tap to continue',
   },
