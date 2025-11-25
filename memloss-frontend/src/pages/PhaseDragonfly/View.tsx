@@ -8,6 +8,7 @@ import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import { t } from '../../shared/i18n/strings';
 import { VideoPreloader } from '../../shared/ui/VideoPreloader';
 import finaleVideo from '../../assets/PhaseFinale/REAL FINAL_OUTRO_1123.mp4';
+import dragonflyEndVideo from '../../assets/PhaseDragonfly/dragonfly_end.mp4';
 
 export default function PhaseDragonfly(){
   const send = useApp(s=>s.send);
@@ -23,6 +24,8 @@ export default function PhaseDragonfly(){
   const [score, setScore] = useState(defaultScore);
   const [running, setRunning] = useState(true);
   const size = useMemo(() => ({ w: 160, h: 160 }), []);
+  const [showEndVideo, setShowEndVideo] = useState(false);
+  const endVideoRef = useRef<HTMLVideoElement>(null);
   const calloutContents = useMemo(() => [
     {
       ko: (<h3>{t('dragonfly','intro_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>),
@@ -69,6 +72,17 @@ export default function PhaseDragonfly(){
     setVel({ vx: Math.cos(angle) * s, vy: Math.sin(angle) * s });
   };
 
+  const showAndPlayEndVideo = () => {
+    setShowEndVideo(true);
+    requestAnimationFrame(() => {
+      const v = endVideoRef.current;
+      if (v) {
+        try { v.currentTime = 0; } catch {}
+        v.play().catch(()=>{});
+      }
+    });
+  };
+
   const handleCatch = () => {
     if (!running) return;
     const newScore = score + 1;
@@ -112,6 +126,10 @@ export default function PhaseDragonfly(){
 
     if (newScore >= defaultMaxScore) {
       setCalloutContentIndex(1);
+      // 엔딩 영상이 서서히 나타나도록 표시하고 재생
+      showAndPlayEndVideo();
+      // 게임 오브젝트는 숨기고 콜아웃을 보여줌
+      setShowGame(false);
       setShowCallout(true);
     } else {
       send({ type: 'catchDragonfly', payload: { count: newScore } });
@@ -132,13 +150,25 @@ export default function PhaseDragonfly(){
       style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}
       className="p-0"
     >
+      {/* Ending background video fades in at completion */}
+      {showEndVideo && (
+        <video
+          ref={endVideoRef}
+          src={dragonflyEndVideo}
+          loop
+          playsInline
+          preload="auto"
+          poster="/assets/PhaseDragonfly/dragonfly_end_poster.png"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 1, opacity: showEndVideo ? 1 : 0, transition: 'opacity 1200ms ease' }}
+        />
+      )}
       <PhaseCallout
         alignH="center"
         alignV="middle"
         visible={showCallout}
         fadeMs={1000}
         dimBackground={true}
-        backdropOpacity={0.9}
+        backdropOpacity={calloutContentIndex == 0 ? 0.9 : 0.2}
         buttonLabel={
           calloutContentIndex === 0
             ? (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','start_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','start_button_sub')}</p></>)
@@ -150,7 +180,6 @@ export default function PhaseDragonfly(){
             setShowGame(true);
             restart();
           } else {
-            console.log('endding');
             send({ type: 'catchDragonfly', payload: { count: defaultMaxScore } });
             setShowCallout(false);
           }
