@@ -26,3 +26,39 @@ cd memloss-backend
 ```
 ssh -i sphereLED-interaction-memloss-seoul-key.pem ec2-user@ec2-43-201-105-0.ap-northeast-2.compute.amazonaws.com
 ```
+
+===================================================
+
+# aws 배포 명령어
+# aws 계정: kmjoyitaol2025@gmail.com
+# webapp url: https://d7lhbcwl1bmkq.cloudfront.net/
+# td ws connection url: ws://ec2-43-201-105-0.ap-northeast-2.compute.amazonaws.com:8080
+
+```zsh
+cd memloss-frontend
+npm run build
+cp -R dist /Users/myoungjikim/dev/aol/memloss2/memloss-backend/src/main/resources/static
+```
+
+```zsh
+# memloss-backend 의 src/main/resources/static 하위의 dist 폴더 안의 내용을 static 바로 하위로 오도록 이동 시키기
+```
+
+```zsh
+./gradlew clean bootJar
+```
+
+```zsh
+scp -i sphereLED-interaction-memloss-seoul-key.pem     /Users/myoungjikim/dev/aol/memloss2/memloss-backend/build/libs/memloss-backend.jar    ec2-user@ec2-43-201-105-0.ap-northeast-2.compute.amazonaws.com:/home/ec2-user/memloss2/app/
+memloss-backend.jar
+```
+
+```zsh
+ssh -i sphereLED-interaction-memloss-seoul-key.pem ec2-user@ec2-43-201-105-0.ap-northeast-2.compute.amazonaws.com
+```
+
+```zsh
+sudo systemctl restart memloss2
+sudo systemctl status memloss2
+```
+
