@@ -12,19 +12,27 @@ import finaleVideo from '../../assets/PhaseFinale/REAL FINAL_OUTRO_1123.mp4';
 export default function PhaseDragonfly(){
   const send = useApp(s=>s.send);
   const [showCallout, setShowCallout] = useState(false);
-  const [showEnddingCallout, setShowEnddingCallout] = useState(false);
+  const [calloutContentIndex, setCalloutContentIndex] = useState(0);
   const [showGame, setShowGame] = useState(false);
 
-  const defaultTime = 40;
   const defaultScore = 0;
   const defaultMaxScore = 12;
   const containerRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x: 100, y: 100 });
   const [vel, setVel] = useState({ vx: 2, vy: 1.6 });
   const [score, setScore] = useState(defaultScore);
-  const [timeLeft, setTimeLeft] = useState(defaultTime);
   const [running, setRunning] = useState(true);
   const size = useMemo(() => ({ w: 160, h: 160 }), []);
+  const calloutContents = useMemo(() => [
+    {
+      ko: (<h3>{t('dragonfly','intro_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>),
+      en: (<p>{t('dragonfly','intro_desc').split('\n').map((line, i) => (<span key={i}>{line}{i !== t('dragonfly','intro_desc').split('\n').length-1 && <br/>}</span>))}</p>)
+    },
+    {
+      ko: (<h3>{t('dragonfly','ending_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>),
+      en: (<p>{t('dragonfly','ending_desc').split('\n').map((line, i) => (<span key={i}>{line}{i !== t('dragonfly','ending_desc').split('\n').length-1 && <br/>}</span>))}</p>)    
+    }
+  ], []);
 
   useEffect(() => {
     setShowCallout(true);
@@ -52,15 +60,7 @@ export default function PhaseDragonfly(){
     return () => clearInterval(id);
   }, [running, vel.vx, vel.vy, size.w, size.h]);
 
-  useEffect(() => {
-    if (!running) return;
-    if (timeLeft <= 0) {
-      setRunning(false);
-      return;
-    }
-    const tid = setInterval(() => setTimeLeft(t => t - 1), 1000);
-    return () => clearInterval(tid);
-  }, [running, timeLeft]);
+  // Removed time limit: no countdown timer.
 
   const speedFactor = 1.5; // tweak here
   const randomizeVelocity = () => {
@@ -111,7 +111,8 @@ export default function PhaseDragonfly(){
     setVel({ vx: (dirX / len) * s, vy: (dirY / len) * s });
 
     if (newScore >= defaultMaxScore) {
-      setShowEnddingCallout(true);
+      setCalloutContentIndex(1);
+      setShowCallout(true);
     } else {
       send({ type: 'catchDragonfly', payload: { count: newScore } });
     }
@@ -120,7 +121,6 @@ export default function PhaseDragonfly(){
 
   const restart = () => {
     setScore(defaultScore);
-    setTimeLeft(defaultTime);
     setRunning(true);
     setPos({ x: 100, y: 100 });
     randomizeVelocity();
@@ -132,38 +132,33 @@ export default function PhaseDragonfly(){
       style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}
       className="p-0"
     >
-      {!showEnddingCallout && showCallout && <PhaseCallout
+      <PhaseCallout
         alignH="center"
         alignV="middle"
         visible={showCallout}
         fadeMs={1000}
         dimBackground={true}
         backdropOpacity={0.9}
-        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','start_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','start_button_sub')}</p></>}
-        onAction={() => { setShowCallout(false); setShowGame(true); restart();}}
-      >
-        <h3>{t('dragonfly','intro_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>
-        <p>{t('dragonfly','intro_desc').split('\n').map((line, i) => (<span key={i}>{line}{i !== t('dragonfly','intro_desc').split('\n').length-1 && <br/>}</span>))}</p>
-      </PhaseCallout>
-      }
-
-      {!showCallout && showEnddingCallout && <PhaseCallout
-        alignH="center"
-        alignV="middle"
-        visible={showEnddingCallout}
-        fadeMs={1000}
-        dimBackground={true}
-        backdropOpacity={0.9}
-        buttonLabel={<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','ending_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','ending_button_sub')}</p></>}
-        onAction={() => { 
-          console.log('endding');
-          send({ type: 'catchDragonfly', payload: { count: defaultMaxScore } });
-          setShowEnddingCallout(false);
+        buttonLabel={
+          calloutContentIndex === 0
+            ? (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','start_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','start_button_sub')}</p></>)
+            : (<><p style={{ fontSize: '0.8rem', margin: '0.2rem'}}>{t('dragonfly','ending_button_main')}</p><p style={{ fontSize: '0.6rem', margin: '0.2rem'}}>{t('dragonfly','ending_button_sub')}</p></>)
+        }
+        onAction={() => {
+          if (calloutContentIndex === 0) {
+            setShowCallout(false);
+            setShowGame(true);
+            restart();
+          } else {
+            console.log('endding');
+            send({ type: 'catchDragonfly', payload: { count: defaultMaxScore } });
+            setShowCallout(false);
+          }
         }}
       >
-        <h3>{t('dragonfly','ending_title').split('\n').map((line, i) => (<span key={i}>{line}{i===0 && <br/>}</span>))}</h3>
-        <p>{t('dragonfly','ending_desc').split('\n').map((line, i) => (<span key={i}>{line}{i !== t('dragonfly','ending_desc').split('\n').length-1 && <br/>}</span>))}</p>
-      </PhaseCallout>}
+        {calloutContents[calloutContentIndex].ko}
+        {calloutContents[calloutContentIndex].en}
+      </PhaseCallout>
 
       {showGame && (
       <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 10 }}>
@@ -181,21 +176,10 @@ export default function PhaseDragonfly(){
             <span style={{ fontSize: 12, opacity: 0.85 }}>{t('dragonfly','hud_score_label')}</span>
             <strong style={{ fontSize: 16, lineHeight: 1 }}>{score}/{defaultMaxScore}</strong>
           </div>
-          <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)' }} />
-          <div style={{ display: 'grid', gap: 2 }}>
-            <span style={{ fontSize: 12, opacity: 0.85 }}>{t('dragonfly','hud_time_label')}</span>
-            <strong style={{ fontSize: 16, lineHeight: 1 }}>{timeLeft}s</strong>
-          </div>
         </div>
       </div>
       )}
-      {/* Centered restart button when game is not running */}
-      {showGame && !running && (
-        <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', zIndex: 15 }}>
-          <Button onClick={restart}>다시 시작</Button>
-        </div>
-      )}
-      {showGame && !showEnddingCallout && (
+      {showGame && (
       <div
         onPointerDown={handleCatch}
         style={{
