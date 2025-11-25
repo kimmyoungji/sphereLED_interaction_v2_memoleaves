@@ -26,9 +26,10 @@ type PhaseCalloutProps = {
   onAction?: () => void;
   secondaryButtonLabel?: ReactNode;
   onSecondaryAction?: () => void;
+  footer?: ReactNode;
 };
 
-export function PhaseCallout({ alignH = 'center', alignV = 'middle', visible, showAtSec, videoRef, fadeMs = 600, dimBackground = true, backdropOpacity = 0.35, children, buttonLabel, onAction, secondaryButtonLabel, onSecondaryAction }: PhaseCalloutProps) {
+export function PhaseCallout({ alignH = 'center', alignV = 'middle', visible, showAtSec, videoRef, fadeMs = 600, dimBackground = true, backdropOpacity = 0.35, children, buttonLabel, onAction, secondaryButtonLabel, onSecondaryAction, footer }: PhaseCalloutProps) {
   const [autoVisible, setAutoVisible] = useState(false);
 
   useEffect(() => {
@@ -76,6 +77,9 @@ export function PhaseCallout({ alignH = 'center', alignV = 'middle', visible, sh
               </button>
             ) : null}
           </div>
+          {footer && isVisible ? (
+            <div className="phase-callout__footer">{footer}</div>
+          ) : null}
         </div>
       </div>
     </div>
