@@ -3,13 +3,14 @@ import { useApp } from '../../store/app';
 import { useMemo, useRef, useState } from 'react';
 import { PhaseCallout } from '../../shared/ui/PhaseCallout';
 import { t } from '../../shared/i18n/strings';
-
 import './View.css';
+
 export default function PhaseTimeline(){
   const send = useApp(s=>s.send);
   const [val, setVal] = useState(100);
   const lastSentRef = useRef<number>(1); // last t sent to server
   const STEP = 0.05; // send when moved by >=5%
+  
   // Callout intro: show for a short time, then hide
   const [showCallout, setShowCallout] = useState(true);
   const [showTimeline, setShowTimeline] = useState(false);
